@@ -21,7 +21,12 @@ public class PlayerLocomotion : MonoBehaviour
     }
     public void HandleAllMovement()
     {
+        HandleMovement();
         HandleRotationCamera();
+    }
+    private void HandleMovement()
+    {
+
     }
     private void HandleRotationCamera()
     {
