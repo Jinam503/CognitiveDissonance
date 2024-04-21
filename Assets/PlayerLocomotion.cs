@@ -7,6 +7,9 @@ public class PlayerLocomotion : MonoBehaviour
     private InputManager inputManager;
     private CharacterController characterController;
 
+    [SerializeField] private Vector3 moveDirection;
+
+    [SerializeField] private float moveSpeed;
     [SerializeField] private float mouseSpeed;
 
     [SerializeField] private float cameraVerticalAngle;
@@ -26,7 +29,13 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
+        moveDirection = transform.forward * inputManager.verticalInput;
+        moveDirection += transform.right * inputManager.horizontalInput;
+        moveDirection.Normalize();
+        moveDirection.y = 0;
+        moveDirection *= moveSpeed * Time.deltaTime;
 
+        characterController.Move(moveDirection);
     }
     private void HandleRotationCamera()
     {
