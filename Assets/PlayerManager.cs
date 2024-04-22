@@ -19,7 +19,7 @@ public class PlayerManager : MonoBehaviour
         inputManager = GetComponent<InputManager>();
     }
 
-    void Update()
+    private void Update()
     {
         inputManager.HandleAllInputs();
         playerLocomotion.HandleAllMovement();
