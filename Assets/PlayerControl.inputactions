@@ -105,6 +105,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MouseRight",
+                    "type": "Button",
+                    "id": "b07e7fa1-4332-4c8b-b7f3-c3654e2a146b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -116,6 +125,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "MouseLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "730e2a7b-198b-452f-9b33-25124d647c0b",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

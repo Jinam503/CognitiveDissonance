@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
 
     private AnimatorManager animatorManager;
     private GravityMaker gravityMaker;
+    private PlayerInteract playerInteract;
 
     [Header("MOVEMENT")]
     public float verticalInput;
@@ -22,6 +23,7 @@ public class InputManager : MonoBehaviour
 
     [Header("ACTIONS")]
     public bool isMouseLeftButtonDown;
+    public bool isMouseRightButtonDown;
 
     private void Awake()
     {
@@ -39,7 +41,10 @@ public class InputManager : MonoBehaviour
             playerControl.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
 
             playerControl.PlayerAction.MouseLeft.performed += i => OnMouseLeftButtonDown();
-            playerControl.PlayerAction.MouseLeft.canceled += i => OnMouseLeftButtonUp();    
+            playerControl.PlayerAction.MouseLeft.canceled += i => OnMouseLeftButtonUp();
+
+            playerControl.PlayerAction.MouseRight.performed += i => OnMouseRightButtonDown();
+            playerControl.PlayerAction.MouseRight.canceled += i => OnMouseRightButtonUp();
         }
 
         playerControl.Enable();
@@ -73,6 +78,10 @@ public class InputManager : MonoBehaviour
         {
             gravityMaker.OnMouseLeftButtonStay();
         }
+        if (isMouseRightButtonDown)
+        {
+            gravityMaker.OnMouseRightButtonStay();
+        }
     }
 
     private void OnMouseLeftButtonDown()
@@ -80,10 +89,19 @@ public class InputManager : MonoBehaviour
         isMouseLeftButtonDown = true;
         gravityMaker.OnMouseLeftButtonDown();
     }
-
     private void OnMouseLeftButtonUp()
     {
         isMouseLeftButtonDown = false;
         gravityMaker.OnMouseLeftButtonUp();
+    }
+    private void OnMouseRightButtonDown()
+    {
+        isMouseRightButtonDown = true;
+        gravityMaker.OnMouseRightButtonDown();
+    }
+    private void OnMouseRightButtonUp()
+    {
+        isMouseRightButtonDown = false;
+        gravityMaker.OnMouseRightButtonUp();
     }
 }

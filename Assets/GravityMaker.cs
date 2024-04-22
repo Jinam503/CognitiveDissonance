@@ -2,58 +2,93 @@ using Cinemachine.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GravityMaker : MonoBehaviour
 {
-    private InputManager inputManager;
+    private PlayerInteract playerInteract;
 
+
+    [Header("CREATE GRAVITY ZONE")]
+    [SerializeField] private GameObject gravityZonePrefab;
     private Vector3 initialGravityFieldPosition;
     private Vector3 initialGravityFieldNormal;
     private Vector3 gravityZoneVector;
-    private Transform childGravityZone;
-    private Transform gravityZone;
+    private Transform childGravityZoneTransform;
+    private Transform gravityZoneTransform;
 
-    [SerializeField] private GameObject gravityZonePrefab;
+    //[Header("MODIFY GRAVITY ZONE")]
+    private GravityZone modifyingGravityZone;
+    private Transform modifyingGravityZoneTransform;
 
     private void Awake()
     {
-        inputManager = GetComponent<InputManager>();
+        playerInteract = GetComponent<PlayerInteract>();
+
+        childGravityZoneTransform = null;
+        gravityZoneTransform = null;
     }
 
     public void OnMouseLeftButtonDown()
     {
         (initialGravityFieldPosition, initialGravityFieldNormal) = Mouse3D.GetMousePositionAndNormal();
-        gravityZone = Instantiate(gravityZonePrefab, initialGravityFieldPosition, Quaternion.LookRotation(initialGravityFieldNormal)).transform;
-        childGravityZone = gravityZone.GetChild(0);
+        gravityZoneTransform = Instantiate(gravityZonePrefab, initialGravityFieldPosition, Quaternion.LookRotation(initialGravityFieldNormal)).transform;
+        childGravityZoneTransform = gravityZoneTransform.GetChild(0);
 
-        gravityZoneVector = gravityZone.position;
-        gravityZone.localScale = new Vector3(1, 1, 0.0001f);
+        gravityZoneVector = gravityZoneTransform.position;
+        gravityZoneTransform.localScale = new Vector3(1, 1, 0.0001f);
     }
-
     public void OnMouseLeftButtonStay()
     {
-        if (gravityZone == null) return;
+        if (gravityZoneTransform == null) return;
 
         Vector3 curPoint = Mouse3D.GetMousePosition();
         Vector3 distanceVector = curPoint - gravityZoneVector;
 
-        float scaleX = Vector3.Dot(distanceVector, gravityZone.right);
-        float scaleY = Vector3.Dot(distanceVector, gravityZone.up);
+        float scaleX = Vector3.Dot(distanceVector, gravityZoneTransform.right);
+        float scaleY = Vector3.Dot(distanceVector, gravityZoneTransform.up);
         float scaleZ = 0.01f;
 
         Vector3 gravityZoneLocalScale = new Vector3(scaleX, scaleY, scaleZ);
-        gravityZone.localScale = gravityZoneLocalScale;
+        gravityZoneTransform.localScale = gravityZoneLocalScale;
 
-        childGravityZone.localScale = ConvertVectorToOne(gravityZoneLocalScale);
+        childGravityZoneTransform.localScale = ConvertVectorToOne(gravityZoneLocalScale);
     }
-
     public void OnMouseLeftButtonUp()
     {
-        if(gravityZone == null) return;
+        if(gravityZoneTransform == null) return;
 
+        GravityZone gravityZone = childGravityZoneTransform.AddComponent<GravityZone>();
+
+        BoxCollider boxCollider = childGravityZoneTransform.AddComponent<BoxCollider>();
+        boxCollider.isTrigger = true;
     }
 
+    public void OnMouseRightButtonDown()
+    {
+        modifyingGravityZone = playerInteract.GetInteractiveGravityZone();
+    }
+    public void OnMouseRightButtonStay()
+    {
+        if (modifyingGravityZone == null) return;
+
+        Vector3 curPoint = Mouse3D.GetMousePosition();
+        Vector3 distanceVector = curPoint - gravityZoneVector;
+
+        float scaleX = Vector3.Dot(distanceVector, gravityZoneTransform.right);
+        float scaleY = Vector3.Dot(distanceVector, gravityZoneTransform.up);
+        float scaleZ = 0.01f;
+
+        Vector3 gravityZoneLocalScale = new Vector3(scaleX, scaleY, scaleZ);
+        modifyingGravityZoneTransform.localScale = gravityZoneLocalScale;
+
+        childGravityZoneTransform.localScale = ConvertVectorToOne(gravityZoneLocalScale);
+    }
+    public void OnMouseRightButtonUp()
+    {
+
+    }
     Vector3 ConvertVectorToOne(Vector3 inputVector)
     {
         return new Vector3(
@@ -62,4 +97,6 @@ public class GravityMaker : MonoBehaviour
             Mathf.Sign(inputVector.z)
         );
     }
+
+    
 }
