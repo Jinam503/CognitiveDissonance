@@ -62,6 +62,7 @@ public class GravityMaker : MonoBehaviour
         if(gravityZoneTransform == null) return;
 
         GravityZone gravityZone = childGravityZoneTransform.AddComponent<GravityZone>();
+        gravityZone.parentTransform = gravityZoneTransform;
 
         BoxCollider boxCollider = childGravityZoneTransform.AddComponent<BoxCollider>();
         boxCollider.isTrigger = true;
@@ -69,17 +70,16 @@ public class GravityMaker : MonoBehaviour
 
     public void OnMouseRightButtonDown()
     {
-        modifyingGravityZone = playerInteract.GetInteractiveGravityZone();
+
     }
     public void OnMouseRightButtonStay()
     {
-        if (modifyingGravityZone == null) return;
-
+        modifyingGravityZone = playerInteract.GetInteractiveGravityZone();
     }
     public void OnMouseRightButtonUp()
     {
         if (modifyingGravityZone == null) return;
-
+        modifyingGravityZone.ApplyGravity(GravityType.OneDirectional); //  Hard Coding
     }
 
     Vector3 ConvertVectorToOne(Vector3 inputVector)

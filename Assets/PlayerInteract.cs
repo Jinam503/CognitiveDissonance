@@ -23,11 +23,14 @@ public class PlayerInteract : MonoBehaviour
         Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         RaycastHit hit;
 
-        if (Physics.Raycast(mainCamera.transform.position, dir, out hit, 7f))
+        if (Physics.Raycast(mainCamera.transform.position, dir, out hit, 15f))
         {
             if (hit.transform.TryGetComponent(out GravityZone gravityZone))
             {
-                returnGravityZone = gravityZone;
+                if (!gravityZone.isGravityFieldCreated)
+                {
+                    returnGravityZone = gravityZone;
+                }
             }
         }
 
