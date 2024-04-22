@@ -18,10 +18,9 @@ public class GravityMaker : MonoBehaviour
     private Vector3 gravityZoneVector;
     private Transform childGravityZoneTransform;
     private Transform gravityZoneTransform;
-
-    //[Header("MODIFY GRAVITY ZONE")]
     private GravityZone modifyingGravityZone;
-    private Transform modifyingGravityZoneTransform;
+    [SerializeField] private LayerMask defaultLayer;
+    
 
     private void Awake()
     {
@@ -63,6 +62,7 @@ public class GravityMaker : MonoBehaviour
 
         GravityZone gravityZone = childGravityZoneTransform.AddComponent<GravityZone>();
         gravityZone.parentTransform = gravityZoneTransform;
+        gravityZone.defaultLayer = defaultLayer;
 
         BoxCollider boxCollider = childGravityZoneTransform.AddComponent<BoxCollider>();
         boxCollider.isTrigger = true;

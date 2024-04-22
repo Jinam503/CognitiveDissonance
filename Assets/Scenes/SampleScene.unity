@@ -6020,7 +6020,7 @@ GameObject:
   - component: {fileID: 447446576}
   - component: {fileID: 447446575}
   m_Layer: 0
-  m_Name: Rig 1
+  m_Name: Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27749,6 +27749,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityZonePrefab: {fileID: 7629345110172691164, guid: 81ba09b6c5d62bb4da77a4405765d78c, type: 3}
+  defaultLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &919132149222376831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27761,6 +27764,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 529f4aed791074042bfe68282f76e71a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gravityZoneLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!4 &936440893404500808
 Transform:
   m_ObjectHideFlags: 0

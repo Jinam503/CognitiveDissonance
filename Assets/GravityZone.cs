@@ -7,6 +7,7 @@ public class GravityZone : MonoBehaviour
 {
     public Transform parentTransform;
     public bool isGravityFieldCreated;
+    public LayerMask defaultLayer;
 
     public void ApplyGravity(GravityType gravityType)
     {
@@ -21,10 +22,6 @@ public class GravityZone : MonoBehaviour
                 break;
         }
     }
-    private void Update()
-    {
-        Debug.DrawRay(transform.position, transform.forward, Color.red);
-    }
 
     private IEnumerator MakeOneDirectionalGravity()
     {
@@ -34,7 +31,7 @@ public class GravityZone : MonoBehaviour
 
         float distance = -1f;
         RaycastHit hit;
-        if(Physics.Raycast(transform.position, dir, out hit))
+        if(Physics.Raycast(transform.position, dir, out hit, 999f, defaultLayer))
         {
             distance = hit.distance;
 

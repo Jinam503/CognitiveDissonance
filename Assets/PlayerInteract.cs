@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerInteract : MonoBehaviour
 {
     private Camera mainCamera;
+    [SerializeField] private LayerMask gravityZoneLayer;
 
     private void Awake()
     {
@@ -18,22 +19,23 @@ public class PlayerInteract : MonoBehaviour
 
     public GravityZone GetInteractiveGravityZone()
     {
-        GravityZone returnGravityZone = null;
-
         Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
-        RaycastHit hit;
+        RaycastHit[] hits = Physics.RaycastAll(mainCamera.transform.position, dir, 15f, gravityZoneLayer);
 
-        if (Physics.Raycast(mainCamera.transform.position, dir, out hit, 15f))
+        if (hits.Length > 0)
         {
-            if (hit.transform.TryGetComponent(out GravityZone gravityZone))
+            foreach (RaycastHit hit in hits)
             {
-                if (!gravityZone.isGravityFieldCreated)
+                if (hit.transform.TryGetComponent(out GravityZone gravityZone))
                 {
-                    returnGravityZone = gravityZone;
+                    if (!gravityZone.isGravityFieldCreated)
+                    {
+                        return gravityZone;
+                    }
                 }
             }
         }
 
-        return returnGravityZone;
+        return null;
     }
 }
