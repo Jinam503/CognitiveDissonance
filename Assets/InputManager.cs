@@ -8,14 +8,20 @@ public class InputManager : MonoBehaviour
 
     private AnimatorManager animatorManager;
 
-    private Vector2 movementInput;
+    [Header("MOVEMENT")]
     public float verticalInput;
     public float horizontalInput;
+    private Vector2 movementInput;
     private float moveAmount;
-
-    private Vector2 cameraInput;
+    
+    [Header("CAMERA")]
     public float cameraHorizontalInput;
     public float cameraVerticalInput;
+    private Vector2 cameraInput;
+
+    [Header("ACTIONS")]
+    public bool mouseLeft;
+
 
     private void Awake()
     {
@@ -29,6 +35,9 @@ public class InputManager : MonoBehaviour
 
             playerControl.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
             playerControl.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
+
+            playerControl.PlayerAction.MouseLeft.performed += i => mouseLeft = true;
+            playerControl.PlayerAction.MouseLeft.canceled += i => mouseLeft = false;
         }
 
         playerControl.Enable();

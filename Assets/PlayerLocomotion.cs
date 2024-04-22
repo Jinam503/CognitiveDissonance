@@ -22,6 +22,7 @@ public class PlayerLocomotion : MonoBehaviour
         inputManager = GetComponent<InputManager>();
         characterController = GetComponent<CharacterController>();
     }
+
     public void HandleAllMovement()
     {
         HandleMovement();

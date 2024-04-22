@@ -209,6 +209,38 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
+--- !u!1 &178109857
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 178109858}
+  m_Layer: 0
+  m_Name: Managers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &178109858
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178109857}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 608722876}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &201832490
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -772,6 +804,53 @@ MonoBehaviour:
     m_HintWeight: 1
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
+--- !u!1 &608722875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 608722876}
+  - component: {fileID: 608722877}
+  m_Layer: 0
+  m_Name: Mouse3D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &608722876
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608722875}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 178109858}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &608722877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608722875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7112b3b15f6df1459e3a268cc6ba8c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoreMask:
+    serializedVersion: 2
+    m_Bits: 55
 --- !u!1 &762032266
 GameObject:
   m_ObjectHideFlags: 0
@@ -1756,9 +1835,10 @@ GameObject:
   - component: {fileID: 919132149222376824}
   - component: {fileID: 919132149222376823}
   - component: {fileID: 919132149222376825}
-  - component: {fileID: 919132149222376827}
   - component: {fileID: 919132149222376828}
+  - component: {fileID: 919132149222376827}
   - component: {fileID: 919132149222376829}
+  - component: {fileID: 919132149222376830}
   m_Layer: 0
   m_Name: Astrounalts
   m_TagString: Untagged
@@ -1812,6 +1892,7 @@ MonoBehaviour:
   horizontalInput: 0
   cameraHorizontalInput: 0
   cameraVerticalInput: 0
+  mouseLeft: 0
 --- !u!143 &919132149222376826
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1871,7 +1952,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3b3c29a98970c0438c9cb44ea7fc5ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveAmount: 0
 --- !u!114 &919132149222376829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1888,6 +1968,19 @@ MonoBehaviour:
   - m_Rig: {fileID: 447446575}
     m_Active: 1
   m_Effectors: []
+--- !u!114 &919132149222376830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132149222376822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87b64a1d709e9e4797f5f96397e69c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravityZonePrefab: {fileID: 7629345110172691164, guid: 81ba09b6c5d62bb4da77a4405765d78c, type: 3}
 --- !u!4 &936440893404500808
 Transform:
   m_ObjectHideFlags: 0
@@ -3181,3 +3274,4 @@ SceneRoots:
   - {fileID: 772324327}
   - {fileID: 919804908}
   - {fileID: 1031533774}
+  - {fileID: 178109858}
