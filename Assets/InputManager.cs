@@ -8,7 +8,6 @@ public class InputManager : MonoBehaviour
 
     private AnimatorManager animatorManager;
     private GravityMaker gravityMaker;
-    private PlayerInteract playerInteract;
 
     [Header("MOVEMENT")]
     public float verticalInput;
@@ -30,7 +29,6 @@ public class InputManager : MonoBehaviour
         animatorManager = GetComponent<AnimatorManager>();
         gravityMaker = GetComponent<GravityMaker>();
     }
-
     private void OnEnable()
     {
         if (playerControl == null)
@@ -49,7 +47,6 @@ public class InputManager : MonoBehaviour
 
         playerControl.Enable();
     }
-
     private void OnDisable()
     {
         playerControl.Disable();
@@ -94,6 +91,7 @@ public class InputManager : MonoBehaviour
         isMouseLeftButtonDown = false;
         gravityMaker.OnMouseLeftButtonUp();
     }
+
     private void OnMouseRightButtonDown()
     {
         isMouseRightButtonDown = true;

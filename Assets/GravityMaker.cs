@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class GravityMaker : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class GravityMaker : MonoBehaviour
     public void OnMouseLeftButtonDown()
     {
         (initialGravityFieldPosition, initialGravityFieldNormal) = Mouse3D.GetMousePositionAndNormal();
+        initialGravityFieldPosition = SnapVectorToVectex(initialGravityFieldPosition);
+
         gravityZoneTransform = Instantiate(gravityZonePrefab, initialGravityFieldPosition, Quaternion.LookRotation(initialGravityFieldNormal)).transform;
         childGravityZoneTransform = gravityZoneTransform.GetChild(0);
 
@@ -48,9 +51,8 @@ public class GravityMaker : MonoBehaviour
 
         float scaleX = Vector3.Dot(distanceVector, gravityZoneTransform.right);
         float scaleY = Vector3.Dot(distanceVector, gravityZoneTransform.up);
-        float scaleZ = 0.01f;
 
-        Vector3 gravityZoneLocalScale = new Vector3(scaleX, scaleY, scaleZ);
+        Vector3 gravityZoneLocalScale = SnapVectorToVectex(new Vector3(scaleX, scaleY, 0), 0.02f);
         gravityZoneTransform.localScale = gravityZoneLocalScale;
 
         childGravityZoneTransform.localScale = ConvertVectorToOne(gravityZoneLocalScale);
@@ -73,22 +75,13 @@ public class GravityMaker : MonoBehaviour
     {
         if (modifyingGravityZone == null) return;
 
-        Vector3 curPoint = Mouse3D.GetMousePosition();
-        Vector3 distanceVector = curPoint - gravityZoneVector;
-
-        float scaleX = Vector3.Dot(distanceVector, gravityZoneTransform.right);
-        float scaleY = Vector3.Dot(distanceVector, gravityZoneTransform.up);
-        float scaleZ = 0.01f;
-
-        Vector3 gravityZoneLocalScale = new Vector3(scaleX, scaleY, scaleZ);
-        modifyingGravityZoneTransform.localScale = gravityZoneLocalScale;
-
-        childGravityZoneTransform.localScale = ConvertVectorToOne(gravityZoneLocalScale);
     }
     public void OnMouseRightButtonUp()
     {
+        if (modifyingGravityZone == null) return;
 
     }
+
     Vector3 ConvertVectorToOne(Vector3 inputVector)
     {
         return new Vector3(
@@ -97,6 +90,17 @@ public class GravityMaker : MonoBehaviour
             Mathf.Sign(inputVector.z)
         );
     }
+    Vector3 SnapVectorToVectex(Vector3 inputVector, float offset = 0f)
+    {
+        Vector3 originVector = inputVector;
 
-    
+        float roundedX = Mathf.Round(originVector.x * 2) / 2;
+        roundedX += roundedX == 0 ? inputVector.x >= 0 ? offset : -offset : 0;
+        float roundedY = Mathf.Round(originVector.y * 2) / 2;
+        roundedY += roundedY == 0 ? inputVector.y >= 0 ? offset : -offset : 0;
+        float roundedZ = Mathf.Round(originVector.z * 2) / 2;
+        roundedZ += roundedZ == 0 ? inputVector.z >= 0 ? offset : -offset : 0;
+
+        return new Vector3(roundedX, roundedY, roundedZ);
+    }
 }
