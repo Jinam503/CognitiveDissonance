@@ -79,7 +79,7 @@ public class GravityMaker : MonoBehaviour
     public void OnMouseRightButtonUp()
     {
         if (modifyingGravityZone == null) return;
-        modifyingGravityZone.ApplyGravity(GravityType.OneDirectional); //  Hard Coding
+        modifyingGravityZone.ApplyGravity(E_GravityType.OneDirectional); //  Hard Coding
     }
 
     Vector3 ConvertVectorToOne(Vector3 inputVector)
