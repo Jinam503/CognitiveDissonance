@@ -23,7 +23,6 @@ public class PlayerInteractUI : MonoBehaviour
     {
         gravityZoneInteractUIContainer.SetActive(false);
     }
-
     private void ShowGravityZoneInteractUIContainer()
     {
         gravityZoneInteractUIContainer.SetActive(true);

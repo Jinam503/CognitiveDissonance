@@ -10,7 +10,6 @@ public class GravityMaker : MonoBehaviour
 {
     private PlayerInteract playerInteract;
 
-
     [Header("CREATE GRAVITY ZONE")]
     [SerializeField] private GameObject gravityZonePrefab;
     private Vector3 initialGravityFieldPosition;
