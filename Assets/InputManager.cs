@@ -6,14 +6,12 @@ public class InputManager : MonoBehaviour
 {
     PlayerControl playerControl;
 
-    private AnimatorManager animatorManager;
     private GravityMaker gravityMaker;
 
     [Header("MOVEMENT")]
     public float verticalInput;
     public float horizontalInput;
     private Vector2 movementInput;
-    private float moveAmount;
 
     [Header("CAMERA")]
     public float cameraHorizontalInput;
@@ -26,7 +24,6 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
-        animatorManager = GetComponent<AnimatorManager>();
         gravityMaker = GetComponent<GravityMaker>();
     }
     private void OnEnable()
@@ -65,9 +62,6 @@ public class InputManager : MonoBehaviour
 
         cameraHorizontalInput = cameraInput.x;
         cameraVerticalInput = cameraInput.y;
-
-        moveAmount = Mathf.Clamp01(Mathf.Abs(verticalInput) + Mathf.Abs(horizontalInput));
-        animatorManager.SetMoveAmount(moveAmount);
     }
     private void HandleMouseInput()
     {
