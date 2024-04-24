@@ -73,7 +73,7 @@ public class InputManager : MonoBehaviour
     {
         if (isMouseLeftButtonDown)
         {
-            gravityMaker.OnMouseLeftButtonStay();
+            gravityMaker.OnMouseLeftButtonStay();   
         }
         if (isMouseRightButtonDown)
         {

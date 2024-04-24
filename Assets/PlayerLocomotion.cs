@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 public class PlayerLocomotion : MonoBehaviour
 {
     private InputManager inputManager;
-    private CharacterController characterController;
+    private Rigidbody rb;
 
     [SerializeField] private Vector3 moveDirection;
 
@@ -16,11 +17,11 @@ public class PlayerLocomotion : MonoBehaviour
     [SerializeField] private float cameraHorizontalAngle;
 
     [SerializeField] private float maxAngle;
-
+    [SerializeField] private Transform cameraPivot;
     private void Awake()
     {
         inputManager = GetComponent<InputManager>();
-        characterController = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
     }
 
     public void HandleAllMovement()
@@ -30,13 +31,12 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void HandleMovement()
     {
-        moveDirection = transform.forward * inputManager.verticalInput;
-        moveDirection += transform.right * inputManager.horizontalInput;
+        moveDirection = cameraPivot.forward * inputManager.verticalInput;
+        moveDirection += cameraPivot.right * inputManager.horizontalInput;
         moveDirection.Normalize();
-        moveDirection.y = 0;
-        moveDirection *= moveSpeed * Time.deltaTime;
-
-        characterController.Move(moveDirection);
+        moveDirection.x = 0;
+        moveDirection *= moveSpeed  ;
+        rb.velocity = moveDirection;
     }
     private void HandleRotationCamera()
     {
@@ -44,13 +44,14 @@ public class PlayerLocomotion : MonoBehaviour
         cameraVerticalAngle -= (inputManager.cameraVerticalInput * mouseSpeed * Time.deltaTime);
         cameraVerticalAngle = Mathf.Clamp(cameraVerticalAngle, -maxAngle, maxAngle);
 
-        Vector3 rotation = Vector3.zero;
-        rotation.y = cameraHorizontalAngle;
+        Vector3 rotation = new Vector3(0, 0, -90);
+        rotation.x = cameraHorizontalAngle;
         Quaternion targetRotation = Quaternion.Euler(rotation);
         transform.rotation = targetRotation;
 
+        rotation = new Vector3(0, 0, 0);
         rotation.x = cameraVerticalAngle;
         targetRotation = Quaternion.Euler(rotation);
-        Camera.main.transform.rotation = targetRotation;
+        Camera.main.transform.localRotation = targetRotation;
     }
 }
