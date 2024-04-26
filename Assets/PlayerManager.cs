@@ -24,9 +24,4 @@ public class PlayerManager : MonoBehaviour
         inputManager.HandleAllInputs();
         playerLocomotion.HandleAllMovement();
     }
-
-    private void FixedUpdate()
-    {
-
-    }
 }

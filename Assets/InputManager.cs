@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class InputManager : MonoBehaviour
 {
     PlayerControl playerControl;
+    PlayerLocomotion playerLocomotion;
 
     private GravityMaker gravityMaker;
 
@@ -22,9 +24,12 @@ public class InputManager : MonoBehaviour
     public bool isMouseLeftButtonDown;
     public bool isMouseRightButtonDown;
 
+    private bool jumpInput;
+        
     private void Awake()
     {
         gravityMaker = GetComponent<GravityMaker>();
+        playerLocomotion = GetComponent<PlayerLocomotion>();
     }
     private void OnEnable()
     {
@@ -40,6 +45,8 @@ public class InputManager : MonoBehaviour
 
             playerControl.PlayerAction.MouseRight.performed += i => OnMouseRightButtonDown();
             playerControl.PlayerAction.MouseRight.canceled += i => OnMouseRightButtonUp();
+
+            playerControl.PlayerAction.Jump.performed += i => jumpInput = true;
         }
 
         playerControl.Enable();
@@ -53,6 +60,8 @@ public class InputManager : MonoBehaviour
     {
         HandleMovementInput();
         HandleMouseInput();
+
+        HandleJumpInput();
     }
 
     private void HandleMovementInput()
@@ -95,5 +104,14 @@ public class InputManager : MonoBehaviour
     {
         isMouseRightButtonDown = false;
         gravityMaker.OnMouseRightButtonUp();
+    }
+
+    private void HandleJumpInput()
+    {
+        if (jumpInput)
+        {
+            jumpInput = false;
+            playerLocomotion.HandleJumping();
+        }
     }
 }

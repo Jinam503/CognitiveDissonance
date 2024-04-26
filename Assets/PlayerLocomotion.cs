@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
@@ -21,11 +22,13 @@ public class PlayerLocomotion : MonoBehaviour
 
     [Header("GRAVITY")]
     public bool isGrounded;
-    [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform groundChecker;
     [SerializeField] private float gravityForce;
-    [SerializeField] private float gravityMultiplier;
     [SerializeField] private LayerMask groundLayerMask;
+
+    [Header("ACTIONS")]
+    public bool isJumping;
+    public float jumpForce;
     private void Awake()
     {
         inputManager = GetComponent<InputManager>();
@@ -34,16 +37,42 @@ public class PlayerLocomotion : MonoBehaviour
 
     public void HandleAllMovement()
     {
-        ApplyGravity();
-        HandleMovement();
+        HandleGravity();
+
         HandleRotationCamera();
+        HandleMovement();
+
+    }
+    float inAirTimer;
+    private void HandleGravity()
+    {
+        RaycastHit hit;
+
+        if (!isGrounded)
+        {
+            Debug.Log("DDDDD");
+            inAirTimer += Time.deltaTime;
+            rb.AddForce(-transform.up * gravityForce * inAirTimer);
+        }
+
+        if(Physics.CheckSphere(groundChecker.position, 0.2f, groundLayerMask))
+        {
+            inAirTimer = 0f;
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
     }
     private void HandleMovement()
     {
         moveDirection = cameraPivot.forward * inputManager.verticalInput;
         moveDirection += cameraPivot.right * inputManager.horizontalInput;
         moveDirection.Normalize();
+        moveDirection.x = 0;
         moveDirection *= moveSpeed;
+
         rb.velocity = moveDirection;
     }
     private void HandleRotationCamera()
@@ -63,19 +92,12 @@ public class PlayerLocomotion : MonoBehaviour
         Camera.main.transform.localRotation = targetRotation;
     }
 
-    float inAirTimer;
-    private void ApplyGravity()
+    public void HandleJumping()
     {
-        isGrounded = Physics.SphereCast(groundChecker.position, 0.2f, -groundChecker.up, out RaycastHit hit, 0.2f, groundLayerMask);
-
-        if (!isGrounded)
+        if (isGrounded)
         {
-            inAirTimer += Time.deltaTime;
-            rb.AddForce(-playerTransform.up * gravityForce * gravityMultiplier * inAirTimer);
-        }
-        else
-        {
-            inAirTimer = 0;
+            moveDirection.x = jumpForce;
+            isJumping = true;
         }
     }
 }
