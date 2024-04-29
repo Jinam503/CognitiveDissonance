@@ -8713,12 +8713,12 @@ MonoBehaviour:
   moveSpeed: 30
   moveDirection: {x: 0, y: 0, z: 0}
   isJumping: 0
-  jumpForce: 15
+  jumpForce: 10
   jumpCoolDown: 0.2
-  airMultiplier: 0.2
+  airMultiplier: 0.1
   isGrounded: 0
-  gravityForce: 10
-  groundDrag: 5
+  gravityForce: 15
+  groundDrag: 7
   groundChecker: {fileID: 2082729648}
   groundLayerMask:
     serializedVersion: 2
