@@ -8,7 +8,6 @@ using UnityEngine.Assertions;
 public class PlayerManager : MonoBehaviour
 {
     private PlayerLocomotion playerLocomotion;
-    private InputManager inputManager;
 
     private void Awake()
     {
@@ -16,12 +15,5 @@ public class PlayerManager : MonoBehaviour
         Cursor.visible = false;
 
         playerLocomotion = GetComponent<PlayerLocomotion>();
-        inputManager = GetComponent<InputManager>();
-    }
-
-    private void Update()
-    {
-        inputManager.HandleAllInputs();
-        playerLocomotion.HandleAllMovement();
     }
 }

@@ -2,102 +2,117 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
 {
-    private InputManager inputManager;
+    [SerializeField] private InputReader input;
+
+    public TextMeshProUGUI speedText;
+    [SerializeField] private Transform orientation; 
     private Rigidbody rb;
 
     [Header("MOVEMENT")]
-    [SerializeField] private Vector3 moveDirection;
     [SerializeField] private float moveSpeed;
-
-    [Header("CAMERA")]
-    [SerializeField] private float mouseSpeed;
-    [SerializeField] private float cameraVerticalAngle;
-    [SerializeField] private float cameraHorizontalAngle;
-    [SerializeField] private float maxAngle;
-    [SerializeField] private Transform cameraPivot;
+    [SerializeField]private Vector3 moveDirection;
+    private float moveInputX;
+    private float moveInputY;
+    
+    [Header("JUMPING")] 
+    public bool isJumping;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpCoolDown;
+    [SerializeField] private float airMultiplier;
 
     [Header("GRAVITY")]
     public bool isGrounded;
-    [SerializeField] private Transform groundChecker;
     [SerializeField] private float gravityForce;
+    [SerializeField] private float groundDrag;
+    [SerializeField] private Transform groundChecker;
     [SerializeField] private LayerMask groundLayerMask;
 
-    [Header("ACTIONS")]
-    public bool isJumping;
-    public float jumpForce;
     private void Awake()
     {
-        inputManager = GetComponent<InputManager>();
         rb = GetComponent<Rigidbody>();
     }
 
-    public void HandleAllMovement()
+    private void Start()
     {
-        HandleGravity();
-
-        HandleRotationCamera();
-        HandleMovement();
-
+        input.MoveEvent += HandleMove;
+        input.JumpEvent += HandleJump;
     }
-    float inAirTimer;
-    private void HandleGravity()
+
+    private void Update()
     {
-        RaycastHit hit;
+        HandleGravityAndDrags();
+        HandleLimitingSpeed();
+        speedText.text =rb.velocity.magnitude.ToString();
+    }
+
+    private void FixedUpdate()
+    {
+        moveDirection = orientation.forward * moveInputY;
+        moveDirection += orientation.right * moveInputX;
+        moveDirection.Normalize();
+        moveDirection *= moveSpeed;
+
+        rb.AddForce(moveDirection, ForceMode.Force);
+    }
+
+    private void HandleMove(Vector2 moveInputs)
+    {
+        moveInputX = moveInputs.x;
+        moveInputY = moveInputs.y;
+    }
+
+    private void HandleJump()
+    {
+        if (isGrounded && !isJumping)
+        {
+            isJumping = true;
+            Jump();
+            Invoke(nameof(ResetJumping), jumpCoolDown);
+        }
+    }
+
+    private void Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.AddForce(orientation.up * jumpForce, ForceMode.Impulse);
+    }
+    private void ResetJumping()
+    {
+        isJumping = false;
+    }
+
+    private void HandleGravityAndDrags()
+    {
+        isGrounded = Physics.CheckSphere(groundChecker.position, 0.2f, groundLayerMask);
 
         if (!isGrounded)
         {
-            Debug.Log("DDDDD");
-            inAirTimer += Time.deltaTime;
-            rb.AddForce(-transform.up * gravityForce * inAirTimer);
+            rb.AddForce(-orientation.up * gravityForce);
         }
-
-        if(Physics.CheckSphere(groundChecker.position, 0.2f, groundLayerMask))
+        
+        if (isGrounded)
         {
-            inAirTimer = 0f;
-            isGrounded = true;
+            rb.drag = groundDrag;
         }
         else
         {
-            isGrounded = false;
+            rb.drag = 0;
         }
     }
-    private void HandleMovement()
+
+    private void HandleLimitingSpeed()
     {
-        moveDirection = cameraPivot.forward * inputManager.verticalInput;
-        moveDirection += cameraPivot.right * inputManager.horizontalInput;
-        moveDirection.Normalize();
-        moveDirection.x = 0;
-        moveDirection *= moveSpeed;
+        Vector3 velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        rb.velocity = moveDirection;
-    }
-    private void HandleRotationCamera()
-    {
-        cameraHorizontalAngle += (inputManager.cameraHorizontalInput * mouseSpeed * Time.deltaTime);
-        cameraVerticalAngle -= (inputManager.cameraVerticalInput * mouseSpeed * Time.deltaTime);
-        cameraVerticalAngle = Mathf.Clamp(cameraVerticalAngle, -maxAngle, maxAngle);
-
-        Vector3 rotation = new Vector3(0, 0, -90);
-        rotation.x = cameraHorizontalAngle;
-        Quaternion targetRotation = Quaternion.Euler(rotation);
-        transform.rotation = targetRotation;
-
-        rotation = new Vector3(0, 0, 0);
-        rotation.x = cameraVerticalAngle;
-        targetRotation = Quaternion.Euler(rotation);
-        Camera.main.transform.localRotation = targetRotation;
-    }
-
-    public void HandleJumping()
-    {
-        if (isGrounded)
+        if (velocity.magnitude > moveSpeed)
         {
-            moveDirection.x = jumpForce;
-            isJumping = true;
+            Vector3 limitedVelocity = velocity.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVelocity.x, rb.velocity.y, limitedVelocity.z);
         }
     }
 }
