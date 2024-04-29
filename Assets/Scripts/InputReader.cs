@@ -72,11 +72,6 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
             case InputActionPhase.Canceled:
                 MouseLeftUpEvent?.Invoke();
                 break;
-            case InputActionPhase.Disabled:
-            case InputActionPhase.Waiting:
-            case InputActionPhase.Started:
-            default:
-                throw new ArgumentOutOfRangeException();
         }
     }
 }

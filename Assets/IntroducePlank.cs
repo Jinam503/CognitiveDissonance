@@ -6,16 +6,20 @@ using UnityEngine;
 
 public class IntroducePlank : MonoBehaviour, IGrabable
 {
-    private Collider collider;
+    private new Collider collider;
+    private new Rigidbody rigidbody;
     private void Awake()
     {
         collider = GetComponent<Collider>();
+        rigidbody = GetComponent<Rigidbody>();
     }
 
-    public GameObject Grab()
+    public GrabableObject Grab()
     {
+        GrabableObject grabableObject = new GrabableObject("Introduce Plank", gameObject, collider, rigidbody);
         collider.enabled = false;
+        rigidbody.useGravity = false;   
         
-        return gameObject;
+        return grabableObject;
     }
 }

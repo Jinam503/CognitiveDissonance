@@ -8,11 +8,14 @@ public class PlayerInteract : MonoBehaviour
 {
     [SerializeField] private InputReader input;
     
+    [Header("GRAVITY GUN")]
     [SerializeField] private LayerMask gravityZoneLayer;
-    [SerializeField] private float interactRange;
-
-    private GameObject grabbedObject;
     
+    [Header("MOUSE INTERACT")]
+    [SerializeField] private float interactRange;
+    [SerializeField] private Transform grabPosition;
+
+    private GrabableObject grabbedObject;
     private Camera mainCamera;
     private void Awake()
     {
@@ -22,8 +25,16 @@ public class PlayerInteract : MonoBehaviour
     private void Start()
     {
         input.MouseRightEvent += CheckForInteractableObject;
-        input.MouseLeftUpEvent += CheckForGrabableObject;
-        input.MouseLeftDownEvent += PutDownGrabbedObject;
+        input.MouseLeftUpEvent += PutDownGrabbedObject;
+        input.MouseLeftDownEvent += CheckForGrabableObject;
+    }
+
+    private void Update()
+    {
+        if (grabbedObject != null)
+        {
+            grabbedObject.gameObject.transform.position = grabPosition.position;
+        }   
     }
 
     private void CheckForGrabableObject()
@@ -42,8 +53,10 @@ public class PlayerInteract : MonoBehaviour
     private void PutDownGrabbedObject()
     {
         if (grabbedObject == null) return;
-        
-        
+
+        grabbedObject.rigidbody.useGravity = true;
+        grabbedObject.collider.enabled = true;
+        grabbedObject = null;
     }
     private void CheckForInteractableObject()
     {
