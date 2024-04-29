@@ -30,6 +30,9 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
     public event Action JumpEvent;
 
     public event Action MouseRightEvent;
+    public event Action MouseLeftDownEvent;
+    public event Action MouseLeftUpEvent;
+    
     public event Action<Vector2> CameraRotateEvent;
     
 
@@ -61,6 +64,19 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
 
     public void OnMouseLeft(InputAction.CallbackContext context)
     {
-        
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                MouseLeftDownEvent?.Invoke();
+                break;
+            case InputActionPhase.Canceled:
+                MouseLeftUpEvent?.Invoke();
+                break;
+            case InputActionPhase.Disabled:
+            case InputActionPhase.Waiting:
+            case InputActionPhase.Started:
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

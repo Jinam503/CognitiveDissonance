@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6394502509309150163}
   - component: {fileID: 7384904719388976073}
   - component: {fileID: 1545796154992014799}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: IntroducePlank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 695168789642714638}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 30
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 8779291356340135973}
   - component: {fileID: 7848004473627797674}
   - component: {fileID: 3830540306488055837}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

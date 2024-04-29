@@ -4,12 +4,18 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class IntroducePlank : MonoBehaviour
+public class IntroducePlank : MonoBehaviour, IGrabable
 {
-    public TextMeshProUGUI introduceText;
-
+    private Collider collider;
     private void Awake()
     {
-        if (transform.GetChild(0).TryGetComponent(out introduceText)) throw new Exception("텍스트가 자식에 없어용용");
+        collider = GetComponent<Collider>();
+    }
+
+    public GameObject Grab()
+    {
+        collider.enabled = false;
+        
+        return gameObject;
     }
 }
