@@ -1,17 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 
 public class PlayerLocomotion : MonoBehaviour
 {
-    [SerializeField] private InputReader input;
-
-    public TextMeshProUGUI speedText;
-    [SerializeField] private Transform orientation; 
     private Rigidbody rb;
+    [SerializeField] private InputReader input;
+    
+    [SerializeField] private Transform orientation; 
 
     [Header("MOVEMENT")]
     [SerializeField] private float moveSpeed;
@@ -36,34 +36,36 @@ public class PlayerLocomotion : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
     }
-
     private void Start()
     {
         input.MoveEvent += HandleMove;
         input.JumpEvent += HandleJump;
     }
-
     private void Update()
     {
         HandleGravityAndDrags();
         HandleLimitingSpeed();
-        speedText.text =rb.velocity.magnitude.ToString();
     }
-
     private void FixedUpdate()
     {
-        moveDirection = orientation.forward * moveInputY;
-        moveDirection += orientation.right * moveInputX;
-        moveDirection.Normalize();
-        moveDirection *= moveSpeed;
-
-        rb.AddForce(moveDirection, ForceMode.Force);
+        Move();
     }
 
     private void HandleMove(Vector2 moveInputs)
     {
         moveInputX = moveInputs.x;
         moveInputY = moveInputs.y;
+    }
+    private void Move()
+    {
+        moveDirection = orientation.forward * moveInputY;
+        moveDirection += orientation.right * moveInputX;
+        moveDirection.Normalize();
+        moveDirection *= moveSpeed;
+
+        moveDirection *= isGrounded ? 1f : airMultiplier;
+        
+        rb.AddForce(moveDirection, ForceMode.Force);
     }
 
     private void HandleJump()
@@ -75,7 +77,6 @@ public class PlayerLocomotion : MonoBehaviour
             Invoke(nameof(ResetJumping), jumpCoolDown);
         }
     }
-
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -85,7 +86,7 @@ public class PlayerLocomotion : MonoBehaviour
     {
         isJumping = false;
     }
-
+    
     private void HandleGravityAndDrags()
     {
         isGrounded = Physics.CheckSphere(groundChecker.position, 0.2f, groundLayerMask);
@@ -104,7 +105,6 @@ public class PlayerLocomotion : MonoBehaviour
             rb.drag = 0;
         }
     }
-
     private void HandleLimitingSpeed()
     {
         Vector3 velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
