@@ -10,8 +10,8 @@ public class PlayerInteract : MonoBehaviour
     
     [Header("GRAVITY GUN")]
     [SerializeField] private LayerMask gravityZoneLayer;
-    
-    [Header("MOUSE INTERACT")]
+
+    [Header("MOUSE INTERACT")] 
     [SerializeField] private float interactRange;
     [SerializeField] private Transform grabPosition;
 
@@ -31,12 +31,17 @@ public class PlayerInteract : MonoBehaviour
 
     private void Update()
     {
-        if (grabbedObject != null)
-        {
-            grabbedObject.gameObject.transform.position = grabPosition.position;
-        }   
+        HoldingGrabObject();
     }
 
+    private void HoldingGrabObject()
+    {
+        if (grabbedObject != null)
+        {
+            Vector3 grabbedObjectPosition = grabbedObject.gameObject.transform.position;
+            grabbedObject.gameObject.transform.position = Vector3.Lerp(grabbedObjectPosition, grabPosition.position, 0.2f);
+        }  
+    }
     private void CheckForGrabableObject()
     {
         Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
@@ -46,16 +51,19 @@ public class PlayerInteract : MonoBehaviour
             if (raycastHit.collider.gameObject.TryGetComponent(out IGrabable grabableObject))
             {
                 grabbedObject = grabableObject.Grab();
+                grabbedObject.gameObject.transform.parent = grabPosition;
             }
         }
     }
-
     private void PutDownGrabbedObject()
     {
         if (grabbedObject == null) return;
 
         grabbedObject.rigidbody.useGravity = true;
         grabbedObject.collider.enabled = true;
+        grabbedObject.ChangeLayerRecursively(grabbedObject.gameObject.transform, "Default");
+        grabbedObject.gameObject.transform.parent = null;
+        
         grabbedObject = null;
     }
     private void CheckForInteractableObject()

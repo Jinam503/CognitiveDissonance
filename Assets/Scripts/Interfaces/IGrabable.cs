@@ -10,7 +10,7 @@ public interface IGrabable
 public class GrabableObject
 {
     public string name;
-
+    
     public GameObject gameObject;
     public Rigidbody rigidbody;
     public Collider collider;
@@ -21,5 +21,15 @@ public class GrabableObject
         this.gameObject = gameObject;
         this.collider = collider;
         this.rigidbody = rigidbody;
+        ChangeLayerRecursively(gameObject.transform, "HoldLayer");
+    }
+    public void ChangeLayerRecursively(Transform parent, string layerName)
+    {
+        parent.gameObject.layer = LayerMask.NameToLayer(layerName);
+
+        foreach (Transform child in parent)
+        {
+            ChangeLayerRecursively(child, layerName);
+        }
     }
 }
