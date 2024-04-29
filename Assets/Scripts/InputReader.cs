@@ -29,6 +29,7 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
     public event Action<Vector2> MoveEvent;
     public event Action JumpEvent;
 
+    public event Action MouseRightEvent;
     public event Action<Vector2> CameraRotateEvent;
     
 
@@ -48,5 +49,18 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
         {
             JumpEvent?.Invoke();
         }
+    }
+
+    public void OnMouseRight(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+        {
+            MouseRightEvent?.Invoke();
+        }
+    }
+
+    public void OnMouseLeft(InputAction.CallbackContext context)
+    {
+        
     }
 }
