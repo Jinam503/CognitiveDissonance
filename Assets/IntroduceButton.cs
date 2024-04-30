@@ -9,7 +9,6 @@ using Random = UnityEngine.Random;
 public class IntroduceButton : Button, IInteractable
 {
     private static int introducePlankSpawnCount;
-    [SerializeField] private Transform[] plankSpawnPoints;
     [SerializeField] private Introduce[] introduces;
     
     [SerializeField] private GameObject introducePlankPrefab;
@@ -38,15 +37,9 @@ public class IntroduceButton : Button, IInteractable
         
         introducePlankSpawnCount++;
         
-        List<int> randomSpawnPointIndex = 
-            Enumerable.Range(0, plankSpawnPoints.Length)
-                .OrderBy(x => Random.value)
-                .Take(introduces.Length)
-                .ToList();
-        
         for (int i = 0; i < introduces.Length; i++)
         {
-            Vector3 position = plankSpawnPoints[randomSpawnPointIndex[i]].position;
+            Vector3 position = new Vector3(Random.Range(-1f, 4f),3f, Random.Range(-4f, 2f));
             Quaternion rotation = Quaternion.Euler(90,0,Random.Range(1, 360));
             
             Transform plank = Instantiate(introducePlankPrefab, position, rotation).transform;

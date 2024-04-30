@@ -13,45 +13,75 @@ public class PlayerInteract : MonoBehaviour
 
     [Header("MOUSE INTERACT")] 
     [SerializeField] private float interactRange;
-    [SerializeField] private Transform grabPosition;
 
+    [Header("GRAB OBJECT")]
+    [SerializeField] private Transform grabPosition;
+    [SerializeField] private float rotationSensitivity;
     private GrabableObject grabbedObject;
+    private bool isRotatingX;
+    private bool isRotatingY;
+    
+    
     private Camera mainCamera;
+    
     private void Awake()
     {
         mainCamera = Camera.main;
     }
-
     private void Start()
     {
         input.MouseRightEvent += CheckForInteractableObject;
         input.MouseLeftUpEvent += PutDownGrabbedObject;
         input.MouseLeftDownEvent += CheckForGrabableObject;
-    }
 
+        input.StartRotatingGrabObjectByXaxis +=  () => {
+            if (grabbedObject != null) {
+                isRotatingX = true;
+            }
+        };
+        input.StopRotatingGrabObjectByXaxis +=  () => {
+            if (grabbedObject != null) {
+                isRotatingX = false;
+            }
+        };
+        input.StartRotatingGrabObjectByYaxis +=  () => {
+            if (grabbedObject != null) {
+                isRotatingY = true;
+            }
+        };
+        input.StopRotatingGrabObjectByYaxis +=  () => {
+            if (grabbedObject != null) {
+                isRotatingY = false;
+            }
+        };
+    }
     private void Update()
     {
         HoldingGrabObject();
     }
-
+    
     private void HoldingGrabObject()
     {
         if (grabbedObject != null)
         {
-            Vector3 grabbedObjectPosition = grabbedObject.gameObject.transform.position;
-            grabbedObject.gameObject.transform.position = Vector3.Lerp(grabbedObjectPosition, grabPosition.position, 0.2f);
-        }  
+            RotateGrabbedObject();
+        }
     }
+
+    #region GRAB OBJECT
+
     private void CheckForGrabableObject()
     {
         Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         Ray ray = new Ray(mainCamera.transform.position, dir);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, interactRange))
         {
-            if (raycastHit.collider.gameObject.TryGetComponent(out IGrabable grabableObject))
+            if (raycastHit.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
             {
-                grabbedObject = grabableObject.Grab();
-                grabbedObject.gameObject.transform.parent = grabPosition;
+                grabPosition.localRotation = Quaternion.identity;
+                
+                grabbedObject = grabableObject;
+                grabbedObject.Grab(grabPosition);
             }
         }
     }
@@ -59,10 +89,8 @@ public class PlayerInteract : MonoBehaviour
     {
         if (grabbedObject == null) return;
 
-        grabbedObject.rigidbody.useGravity = true;
-        grabbedObject.collider.enabled = true;
-        grabbedObject.ChangeLayerRecursively(grabbedObject.gameObject.transform, "Default");
-        grabbedObject.gameObject.transform.parent = null;
+        
+        grabbedObject.Drop();
         
         grabbedObject = null;
     }
@@ -78,6 +106,22 @@ public class PlayerInteract : MonoBehaviour
             }
         }
     }
+    private void RotateGrabbedObject()
+    {
+        if (isRotatingX)
+        {
+            grabPosition.Rotate(Vector3.down, rotationSensitivity);
+        }
+        if (isRotatingY)
+        {
+            grabPosition.Rotate(Vector3.right, rotationSensitivity);
+        }
+    }
+    
+    #endregion
+
+    #region GRAVITY ZONE
+
     public GravityZone GetInteractiveGravityZone()
     {
         Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
@@ -98,4 +142,7 @@ public class PlayerInteract : MonoBehaviour
 
         return null;
     }
+
+    #endregion
+    
 }

@@ -71,6 +71,24 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Left Right"",
+                    ""type"": ""Button"",
+                    ""id"": ""6902c4b8-9f26-43bc-aa87-a04c3278a825"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Up Down"",
+                    ""type"": ""Button"",
+                    ""id"": ""3a0ecce7-2527-475b-9d4d-c9284b60083b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -172,6 +190,28 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""action"": ""MouseLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""00b2d81c-3490-4a7b-9abe-2cf7e5a69195"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate Left Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c8291a1-e1e5-4c72-858a-dd963b265064"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate Up Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -185,6 +225,8 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_GamePlay_Jump = m_GamePlay.FindAction("Jump", throwIfNotFound: true);
         m_GamePlay_MouseRight = m_GamePlay.FindAction("MouseRight", throwIfNotFound: true);
         m_GamePlay_MouseLeft = m_GamePlay.FindAction("MouseLeft", throwIfNotFound: true);
+        m_GamePlay_RotateLeftRight = m_GamePlay.FindAction("Rotate Left Right", throwIfNotFound: true);
+        m_GamePlay_RotateUpDown = m_GamePlay.FindAction("Rotate Up Down", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +293,8 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Jump;
     private readonly InputAction m_GamePlay_MouseRight;
     private readonly InputAction m_GamePlay_MouseLeft;
+    private readonly InputAction m_GamePlay_RotateLeftRight;
+    private readonly InputAction m_GamePlay_RotateUpDown;
     public struct GamePlayActions
     {
         private @GameInput m_Wrapper;
@@ -260,6 +304,8 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_GamePlay_Jump;
         public InputAction @MouseRight => m_Wrapper.m_GamePlay_MouseRight;
         public InputAction @MouseLeft => m_Wrapper.m_GamePlay_MouseLeft;
+        public InputAction @RotateLeftRight => m_Wrapper.m_GamePlay_RotateLeftRight;
+        public InputAction @RotateUpDown => m_Wrapper.m_GamePlay_RotateUpDown;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +330,12 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @MouseLeft.started += instance.OnMouseLeft;
             @MouseLeft.performed += instance.OnMouseLeft;
             @MouseLeft.canceled += instance.OnMouseLeft;
+            @RotateLeftRight.started += instance.OnRotateLeftRight;
+            @RotateLeftRight.performed += instance.OnRotateLeftRight;
+            @RotateLeftRight.canceled += instance.OnRotateLeftRight;
+            @RotateUpDown.started += instance.OnRotateUpDown;
+            @RotateUpDown.performed += instance.OnRotateUpDown;
+            @RotateUpDown.canceled += instance.OnRotateUpDown;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -303,6 +355,12 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @MouseLeft.started -= instance.OnMouseLeft;
             @MouseLeft.performed -= instance.OnMouseLeft;
             @MouseLeft.canceled -= instance.OnMouseLeft;
+            @RotateLeftRight.started -= instance.OnRotateLeftRight;
+            @RotateLeftRight.performed -= instance.OnRotateLeftRight;
+            @RotateLeftRight.canceled -= instance.OnRotateLeftRight;
+            @RotateUpDown.started -= instance.OnRotateUpDown;
+            @RotateUpDown.performed -= instance.OnRotateUpDown;
+            @RotateUpDown.canceled -= instance.OnRotateUpDown;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -327,5 +385,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnMouseRight(InputAction.CallbackContext context);
         void OnMouseLeft(InputAction.CallbackContext context);
+        void OnRotateLeftRight(InputAction.CallbackContext context);
+        void OnRotateUpDown(InputAction.CallbackContext context);
     }
 }

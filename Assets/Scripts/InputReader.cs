@@ -33,6 +33,11 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
     public event Action MouseLeftDownEvent;
     public event Action MouseLeftUpEvent;
     
+    public event Action StartRotatingGrabObjectByXaxis;
+    public event Action StopRotatingGrabObjectByXaxis;
+    public event Action StartRotatingGrabObjectByYaxis;
+    public event Action StopRotatingGrabObjectByYaxis;
+    
     public event Action<Vector2> CameraRotateEvent;
     
 
@@ -71,6 +76,32 @@ public class InputReader : ScriptableObject, GameInput.IGamePlayActions
                 break;
             case InputActionPhase.Canceled:
                 MouseLeftUpEvent?.Invoke();
+                break;
+        }
+    }
+
+    public void OnRotateLeftRight(InputAction.CallbackContext context)
+    {
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                StartRotatingGrabObjectByXaxis?.Invoke();
+                break;
+            case InputActionPhase.Canceled:
+                StopRotatingGrabObjectByXaxis?.Invoke();
+                break;
+        }
+    }
+
+    public void OnRotateUpDown(InputAction.CallbackContext context)
+    {
+        switch (context.phase)
+        {
+            case InputActionPhase.Performed:
+                StartRotatingGrabObjectByYaxis?.Invoke();
+                break;
+            case InputActionPhase.Canceled:
+                StopRotatingGrabObjectByYaxis?.Invoke();
                 break;
         }
     }
