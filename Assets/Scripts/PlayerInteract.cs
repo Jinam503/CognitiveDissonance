@@ -13,6 +13,12 @@ public class PlayerInteract : MonoBehaviour
 
     [Header("MOUSE INTERACT")] 
     [SerializeField] private float interactRange;
+    [SerializeField] private LayerMask interactableLayer;
+
+    private Vector3 dir;
+    private Ray ray;
+    private RaycastHit hitInfo;
+    private Outline pointingObjectOutline;
 
     [Header("GRAB OBJECT")]
     [SerializeField] private Transform grabPosition;
@@ -30,9 +36,7 @@ public class PlayerInteract : MonoBehaviour
     }
     private void Start()
     {
-        input.MouseRightEvent += CheckForInteractableObject;
-        input.MouseLeftUpEvent += PutDownGrabbedObject;
-        input.MouseLeftDownEvent += CheckForGrabableObject;
+        input.MouseRightEvent += GrabOrDropObject;
 
         input.StartRotatingGrabObjectByXaxis +=  () => {
             if (grabbedObject != null) {
@@ -54,53 +58,87 @@ public class PlayerInteract : MonoBehaviour
                 isRotatingY = false;
             }
         };
+        
     }
-    private void Update()
+    private void FixedUpdate()
     {
         HoldingGrabObject();
     }
-    
+
+    private void Update()
+    {
+        CheckForInteractableOrGrabableObject();
+    }
+
     private void HoldingGrabObject()
     {
-        if (grabbedObject != null)
+        if (grabbedObject)
         {
             RotateGrabbedObject();
         }
     }
 
-    #region GRAB OBJECT
+    #region INTERACT OBJECT
 
-    private void CheckForGrabableObject()
+    private void CheckForInteractableOrGrabableObject()
     {
-        Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
-        Ray ray = new Ray(mainCamera.transform.position, dir);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, interactRange))
+        
+        dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
+        ray = new Ray(mainCamera.transform.position, dir);
+        if (Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer)) // 레이캐스트를 쏘고
         {
-            if (raycastHit.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
+            if (hitInfo.collider.gameObject.TryGetComponent(out Outline outline)) // 만약 OutLine이 있다면
+            {
+                if (outline.enabled) return;//OutLine이 켜져있으면 Return하고
+                
+                outline.enabled = true;//꺼져있다면 켜준다.
+                pointingObjectOutline = outline; // 나중에 꺼주기 위해Outline저장
+            }
+            else                               //OutLine이 없다면 
+            {
+                if (pointingObjectOutline) // 꺼야할 outLine이 있다면
+                {
+                    pointingObjectOutline.enabled = false; //꺼주고
+                    pointingObjectOutline = null;//null로 변경
+                }
+            }
+        }
+        else // 레이캐스트를 쐈는데 아무것도 없다면 
+        {
+            if (pointingObjectOutline) // 꺼야할 OutLine이 있다면
+            {
+                pointingObjectOutline.enabled = false;
+                pointingObjectOutline = null;
+            }
+
+        }
+    }
+    private void GrabOrDropObject()
+    {
+        if (grabbedObject)
+        {
+            if (!grabbedObject.canDrop)
+            {
+                Debug.Log("여기 못 놓음..");
+                return;
+            }
+            grabbedObject.Drop();
+            grabbedObject = null;
+            
+            return;
+        }
+        
+        dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
+        ray = new Ray(mainCamera.transform.position, dir);
+        if (Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer))
+        {if (hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
             {
                 grabPosition.localRotation = Quaternion.identity;
                 
                 grabbedObject = grabableObject;
                 grabbedObject.Grab(grabPosition);
             }
-        }
-    }
-    private void PutDownGrabbedObject()
-    {
-        if (grabbedObject == null) return;
-
-        
-        grabbedObject.Drop();
-        
-        grabbedObject = null;
-    }
-    private void CheckForInteractableObject()
-    {
-        Vector3 dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
-        Ray ray = new Ray(mainCamera.transform.position, dir);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, interactRange))
-        {
-            if (raycastHit.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
+            else if (hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
             {
                 interactableObject.Interact();
             }

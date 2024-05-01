@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,9 @@ public class Button : MonoBehaviour
 { 
     protected Coroutine pushButtonCoroutine;
     protected bool isPushed;
-    
+
+    protected Outline outline;
+
     protected IEnumerator PushButton()
     {
         //  Hard Coding.....................
