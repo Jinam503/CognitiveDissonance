@@ -8,9 +8,19 @@ public class Button : MonoBehaviour
     protected Coroutine pushButtonCoroutine;
     protected bool isPushed;
 
-    protected Outline outline;
+    protected void PushButton()
+    {
+        if (isPushed) return;
+        
+        if (pushButtonCoroutine != null)
+        {
+            StopCoroutine(pushButtonCoroutine);
+        }
+        pushButtonCoroutine = StartCoroutine(CPushButton());
+        Debug.Log("GameStart");
+    }
 
-    protected IEnumerator PushButton()
+    private IEnumerator CPushButton()
     {
         //  Hard Coding.....................
         isPushed = true;

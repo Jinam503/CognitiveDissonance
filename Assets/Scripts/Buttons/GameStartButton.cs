@@ -6,13 +6,8 @@ public class GameStartButton : Button, IInteractable
 {
     public void Interact()
     {
-        if (isPushed) return;
+        PushButton();
         
-        if (pushButtonCoroutine != null)
-        {
-            StopCoroutine(pushButtonCoroutine);
-        }
-        pushButtonCoroutine = StartCoroutine(PushButton());
         Debug.Log("GameStart");
     }
 }

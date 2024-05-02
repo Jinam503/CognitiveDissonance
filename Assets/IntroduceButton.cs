@@ -22,13 +22,7 @@ public class IntroduceButton : Button, IInteractable
     {
         if (isPushed) return;
         
-        if (pushButtonCoroutine != null)
-        {
-            StopCoroutine(pushButtonCoroutine);
-        }
-        pushButtonCoroutine = StartCoroutine(PushButton());
-
-        StartCoroutine(SpawnPlank());
+        PushButton();
     }
 
     private IEnumerator SpawnPlank()

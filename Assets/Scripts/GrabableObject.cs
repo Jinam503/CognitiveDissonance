@@ -32,14 +32,9 @@ public class GrabableObject : MonoBehaviour
             return;
         }
 
-        Vector3 newPosition = Vector3.Lerp(transform.position, grabTransform.position, Time.deltaTime * 30f);
+        Vector3 newPosition = Vector3.Lerp(transform.position, grabTransform.position, Time.deltaTime * 100f);
         rigidbody.MovePosition(newPosition);
-
-        Quaternion newRotation = Quaternion.Lerp(transform.rotation, grabTransform.rotation, Time.deltaTime * 30f);
-        rigidbody.MoveRotation(newRotation);
         
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.angularVelocity = Vector3.zero;
         
         outline.OutlineColor = canDrop ? Color.white : Color.red;
     }
@@ -56,16 +51,22 @@ public class GrabableObject : MonoBehaviour
 
     public void Grab(Transform grabTransformP)
     {
+        transform.parent = grabTransformP;
         grabTransform = grabTransformP;
         
         ChangeLayerRecursively(gameObject.transform, "HoldLayer");
 
         rigidbody.useGravity = false;
         collider.isTrigger = true;
+        
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
+        
         canDrop = true;
     }
     public void Drop()
     {
+        transform.parent = null;
         ChangeLayerRecursively(gameObject.transform, "Interactable");
         
         grabTransform = null;

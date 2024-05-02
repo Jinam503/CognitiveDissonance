@@ -133,7 +133,7 @@ public class PlayerInteract : MonoBehaviour
         if (Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer))
         {if (hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
             {
-                grabPosition.localRotation = Quaternion.identity;
+                grabPosition.rotation = grabableObject.transform.rotation;
                 
                 grabbedObject = grabableObject;
                 grabbedObject.Grab(grabPosition);
