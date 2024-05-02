@@ -9,6 +9,7 @@ public class IntroduceText : MonoBehaviour,IInteractable
 {
     [SerializeField] private TextMeshPro introduceText;
     [SerializeField] [TextArea] private string[] introduceTexts;
+    [SerializeField] private GameObject mouseClickImage;
     private int curTextIndex;
     private bool canClick;
     
@@ -23,8 +24,8 @@ public class IntroduceText : MonoBehaviour,IInteractable
 
     public void Interact()
     {
-        Debug.Log("s");
         if (!canClick || curTextIndex >= introduceTexts.Length) return;
+        if(mouseClickImage.activeSelf)mouseClickImage.SetActive(false);
         StartCoroutine(WriteNextIntroduce());
     }
 

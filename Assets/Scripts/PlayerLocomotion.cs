@@ -5,17 +5,19 @@ using System.Globalization;
 using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerLocomotion : MonoBehaviour
 {
     private Rigidbody rb;
+    private CharacterController cC;
     [SerializeField] private InputReader input;
     
     [SerializeField] private Transform orientation; 
 
     [Header("MOVEMENT")]
     [SerializeField] private float moveSpeed;
-    [SerializeField]private Vector3 moveDirection;
+    private Vector3 moveDirection;
     private float moveInputX;
     private float moveInputY;
     
@@ -27,7 +29,8 @@ public class PlayerLocomotion : MonoBehaviour
 
     [Header("GRAVITY")]
     public bool isGrounded;
-    [SerializeField] private float gravityForce;
+    private readonly float gravity = -9.8f;
+    [SerializeField] private float gravityMultiplier;
     [SerializeField] private float groundDrag;
     [SerializeField] private Transform groundChecker;
     [SerializeField] private LayerMask groundLayerMask;
@@ -35,6 +38,7 @@ public class PlayerLocomotion : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        cC = GetComponent<CharacterController>();
     }
     private void Start()
     {
@@ -43,11 +47,7 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void Update()
     {
-        HandleGravityAndDrags();
-        HandleLimitingSpeed();
-    }
-    private void FixedUpdate()
-    {
+        ApplyGravity();
         Move();
     }
 
@@ -55,64 +55,24 @@ public class PlayerLocomotion : MonoBehaviour
     {
         moveInputX = moveInputs.x;
         moveInputY = moveInputs.y;
-    }
-    private void Move()
-    {
+        
         moveDirection = orientation.forward * moveInputY;
         moveDirection += orientation.right * moveInputX;
         moveDirection.Normalize();
-        moveDirection *= moveSpeed;
+        moveDirection *= moveSpeed * Time.deltaTime;
+    }
 
-        moveDirection *= isGrounded ? 1f : airMultiplier;
-        
-        rb.AddForce(moveDirection, ForceMode.Force);
+    private void ApplyGravity()
+    {
+        moveDirection.y = gravity * gravityMultiplier * Time.deltaTime;
+    }
+    private void Move()
+    {
+        cC.Move(moveDirection);
     }
 
     private void HandleJump()
     {
-        if (isGrounded && !isJumping)
-        {
-            isJumping = true;
-            Jump();
-            Invoke(nameof(ResetJumping), jumpCoolDown);
-        }
-    }
-    private void Jump()
-    {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(orientation.up * jumpForce, ForceMode.Impulse);
-    }
-    private void ResetJumping()
-    {
-        isJumping = false;
     }
     
-    private void HandleGravityAndDrags()
-    {
-        isGrounded = Physics.CheckSphere(groundChecker.position, 0.2f, groundLayerMask);
-
-        if (!isGrounded)
-        {
-            rb.AddForce(-orientation.up * gravityForce);
-        }
-        
-        if (isGrounded)
-        {
-            rb.drag = groundDrag;
-        }
-        else
-        {
-            rb.drag = 0;
-        }
-    }
-    private void HandleLimitingSpeed()
-    {
-        Vector3 velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        if (velocity.magnitude > moveSpeed)
-        {
-            Vector3 limitedVelocity = velocity.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedVelocity.x, rb.velocity.y, limitedVelocity.z);
-        }
-    }
 }

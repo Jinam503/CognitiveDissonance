@@ -18,7 +18,6 @@ public class PlayerInteract : MonoBehaviour
     private Vector3 dir;
     private Ray ray;
     private RaycastHit hitInfo;
-    private Outline pointingObjectOutline;
 
     [Header("GRAB OBJECT")]
     [SerializeField] private Transform grabPosition;
@@ -94,23 +93,6 @@ public class PlayerInteract : MonoBehaviour
                 outline.enabled = true;//꺼져있다면 켜준다.
                 pointingObjectOutline = outline; // 나중에 꺼주기 위해Outline저장
             }
-            else                               //OutLine이 없다면 
-            {
-                if (pointingObjectOutline) // 꺼야할 outLine이 있다면
-                {
-                    pointingObjectOutline.enabled = false; //꺼주고
-                    pointingObjectOutline = null;//null로 변경
-                }
-            }
-        }
-        else // 레이캐스트를 쐈는데 아무것도 없다면 
-        {
-            if (pointingObjectOutline) // 꺼야할 OutLine이 있다면
-            {
-                pointingObjectOutline.enabled = false;
-                pointingObjectOutline = null;
-            }
-
         }
     }
     private void GrabOrDropObject()

@@ -50,7 +50,7 @@ MonoBehaviour:
     defaultState: 1
   intensity:
     overrideState: 1
-    value: 0.2
+    value: 0.293
   fastMode:
     overrideState: 0
     value: 1
@@ -1468,10 +1468,10 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   shutterAngle:
-    overrideState: 0
-    value: 270
+    overrideState: 1
+    value: 360
   sampleCount:
-    overrideState: 0
+    overrideState: 1
     value: 10
 --- !u!114 &4241576883926554153
 MonoBehaviour:
@@ -1496,20 +1496,20 @@ MonoBehaviour:
     overrideState: 1
     value: {r: 0, g: 0, b: 0, a: 1}
   center:
-    overrideState: 0
+    overrideState: 1
     value: {x: 0.5, y: 0.5}
   intensity:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 1
   smoothness:
-    overrideState: 0
-    value: 0.2
+    overrideState: 1
+    value: 0.66
   roundness:
     overrideState: 0
     value: 1
   rounded:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 1
   mask:
     overrideState: 1
     value: {fileID: 0}
@@ -1586,26 +1586,26 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   preset:
-    overrideState: 0
-    value: 7
+    overrideState: 1
+    value: 5
   maximumIterationCount:
     overrideState: 1
-    value: 49
+    value: 0
   resolution:
-    overrideState: 0
+    overrideState: 1
     value: 0
   thickness:
     overrideState: 1
     value: 9.4
   maximumMarchDistance:
     overrideState: 1
-    value: 118.31
+    value: 86.19
   distanceFade:
     overrideState: 1
-    value: 0
+    value: 0.768
   vignette:
     overrideState: 1
-    value: 0.5
+    value: 0.647
 --- !u!114 &6678647858875777419
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1671,22 +1671,22 @@ MonoBehaviour:
     value: 1
   filtering:
     overrideState: 1
-    value: {x: 50, y: 95}
+    value: {x: 53.10557, y: 98.10559}
   minLuminance:
     overrideState: 1
     value: -9
   maxLuminance:
     overrideState: 1
-    value: 7.52
+    value: 9
   keyValue:
     overrideState: 1
-    value: 1
+    value: 3.9
   eyeAdaptation:
-    overrideState: 0
+    overrideState: 1
     value: 0
   speedUp:
-    overrideState: 0
-    value: 2
+    overrideState: 1
+    value: 2.71
   speedDown:
-    overrideState: 0
+    overrideState: 1
     value: 1
