@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerInteract : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class PlayerInteract : MonoBehaviour
     [Header("MOUSE INTERACT")] 
     [SerializeField] private float interactRange;
     [SerializeField] private LayerMask interactableLayer;
+    [SerializeField] private Image cursorIcon;
+    [SerializeField] private Sprite[] cursorSprites;
+    private bool isPointingGrabableOrInteractableObject;
 
     private Vector3 dir;
     private Ray ray;
@@ -25,7 +29,6 @@ public class PlayerInteract : MonoBehaviour
     private GrabableObject grabbedObject;
     private bool isRotatingX;
     private bool isRotatingY;
-    
     
     private Camera mainCamera;
     
@@ -63,7 +66,6 @@ public class PlayerInteract : MonoBehaviour
     {
         HoldingGrabObject();
     }
-
     private void Update()
     {
         CheckForInteractableOrGrabableObject();
@@ -81,19 +83,9 @@ public class PlayerInteract : MonoBehaviour
 
     private void CheckForInteractableOrGrabableObject()
     {
-        
         dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         ray = new Ray(mainCamera.transform.position, dir);
-        if (Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer)) // 레이캐스트를 쏘고
-        {
-            if (hitInfo.collider.gameObject.TryGetComponent(out Outline outline)) // 만약 OutLine이 있다면
-            {
-                if (outline.enabled) return;//OutLine이 켜져있으면 Return하고
-                
-                outline.enabled = true;//꺼져있다면 켜준다.
-                pointingObjectOutline = outline; // 나중에 꺼주기 위해Outline저장
-            }
-        }
+        isPointingGrabableOrInteractableObject = Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer);
     }
     private void GrabOrDropObject()
     {
@@ -113,7 +105,8 @@ public class PlayerInteract : MonoBehaviour
         dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         ray = new Ray(mainCamera.transform.position, dir);
         if (Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer))
-        {if (hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
+        {
+            if (hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
             {
                 grabPosition.rotation = grabableObject.transform.rotation;
                 
