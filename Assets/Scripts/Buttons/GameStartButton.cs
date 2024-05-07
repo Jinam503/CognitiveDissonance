@@ -6,14 +6,15 @@ using UnityEngine.Serialization;
 
 public class GameStartButton : Button, IInteractable
 {
-    [SerializeField] private GameObject floor;
+    [SerializeField] private MeshCollider floor;
     [SerializeField] private GameObject startText;
     [SerializeField] private GameObject introduceText;
     public void Interact()
     {
         PushButton();
-        
-        floor.SetActive(false);
+
+        floor.convex = true;
+        floor.isTrigger = true;
         startText.SetActive(false);
         introduceText.SetActive(false);
         gameObject.SetActive(false);

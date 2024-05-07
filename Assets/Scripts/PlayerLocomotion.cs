@@ -9,35 +9,32 @@ using UnityEngine.Serialization;
 
 public class PlayerLocomotion : MonoBehaviour
 {
-    private Rigidbody rb;
     private CharacterController cC;
     [SerializeField] private InputReader input;
     
-    [SerializeField] private Transform orientation; 
-
+    [Header("Boxcast Property")]
+    [SerializeField] private Vector3 boxSize;
+    [SerializeField] private float maxDistance;
+    [SerializeField] private LayerMask groundLayer;
+    
+    
     [Header("MOVEMENT")]
     [SerializeField] private float moveSpeed;
-    private Vector3 moveDirection;
     private float moveInputX;
     private float moveInputY;
     
     [Header("JUMPING")] 
-    public bool isJumping;
+    public bool jumpFlag;
     [SerializeField] private float jumpForce;
-    [SerializeField] private float jumpCoolDown;
-    [SerializeField] private float airMultiplier;
 
     [Header("GRAVITY")]
-    public bool isGrounded;
-    private readonly float gravity = -9.8f;
     [SerializeField] private float gravityMultiplier;
-    [SerializeField] private float groundDrag;
-    [SerializeField] private Transform groundChecker;
-    [SerializeField] private LayerMask groundLayerMask;
-
+    
+    private Vector3 velocity;
+    private Vector3 lastFixedPosition;
+    private Vector3 nextFixedPosition;
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
         cC = GetComponent<CharacterController>();
     }
     private void Start()
@@ -47,32 +44,61 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private void Update()
     {
-        ApplyGravity();
-        Move();
+        float interpolationAlpha = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
+        cC.Move(Vector3.Lerp(lastFixedPosition, nextFixedPosition, interpolationAlpha) - transform.position);
+    }
+    private void FixedUpdate()
+    {
+        lastFixedPosition = nextFixedPosition;
+
+        Vector3 planeVelocity = GetXZVelocity(moveInputX, moveInputY);
+        float yVelocity = GetYVelocity();
+        velocity = new Vector3(planeVelocity.x, yVelocity, planeVelocity.z);
+
+        nextFixedPosition += velocity * Time.fixedDeltaTime;
     }
 
     private void HandleMove(Vector2 moveInputs)
     {
         moveInputX = moveInputs.x;
         moveInputY = moveInputs.y;
-        
-        moveDirection = orientation.forward * moveInputY;
-        moveDirection += orientation.right * moveInputX;
-        moveDirection.Normalize();
-        moveDirection *= moveSpeed * Time.deltaTime;
     }
-
-    private void ApplyGravity()
-    {
-        moveDirection.y = gravity * gravityMultiplier * Time.deltaTime;
-    }
-    private void Move()
-    {
-        cC.Move(moveDirection);
-    }
-
     private void HandleJump()
     {
+        jumpFlag = true;
+    }
+    private Vector3 GetXZVelocity(float horizontalInput, float verticalInput)
+    {
+        Vector3 moveVelocity = Camera.main.transform.forward * verticalInput + Camera.main.transform.right * horizontalInput;
+        Vector3 moveDirection = moveVelocity.normalized;
+        float moveSpeed = Mathf.Min(moveVelocity.magnitude, 1.0f) * this.moveSpeed;
+
+        return moveDirection * moveSpeed;
+    }
+    private float GetYVelocity()
+    {
+        if (!IsGrounded())
+        {
+            return velocity.y - gravityMultiplier * Time.fixedDeltaTime;
+        }
+
+        if (jumpFlag)
+        {
+            jumpFlag = false;
+            return velocity.y + jumpForce;
+        }
+        return Mathf.Max(0.0f, velocity.y);
+    }
+    private bool IsGrounded()
+    {
+        return Physics.BoxCast(transform.position, boxSize, -transform.up, transform.rotation, maxDistance, groundLayer);
     }
     
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.rigidbody)
+        {
+            hit.rigidbody.AddForce(velocity / hit.rigidbody.mass);
+        }
+    }
 }
