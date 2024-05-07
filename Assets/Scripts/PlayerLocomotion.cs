@@ -71,9 +71,9 @@ public class PlayerLocomotion : MonoBehaviour
     {
         Vector3 moveVelocity = Camera.main.transform.forward * verticalInput + Camera.main.transform.right * horizontalInput;
         Vector3 moveDirection = moveVelocity.normalized;
-        float moveSpeed = Mathf.Min(moveVelocity.magnitude, 1.0f) * this.moveSpeed;
+        float _moveSpeed = Mathf.Min(moveVelocity.magnitude, 1.0f) * moveSpeed;
 
-        return moveDirection * moveSpeed;
+        return moveDirection * _moveSpeed;
     }
     private float GetYVelocity()
     {
@@ -100,5 +100,10 @@ public class PlayerLocomotion : MonoBehaviour
         {
             hit.rigidbody.AddForce(velocity / hit.rigidbody.mass);
         }
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawCube(transform.position - transform.up * maxDistance, boxSize);
     }
 }
