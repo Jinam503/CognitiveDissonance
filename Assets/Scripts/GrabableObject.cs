@@ -11,7 +11,6 @@ public class GrabableObject : MonoBehaviour
 
     private new Rigidbody rigidbody;
     protected new Collider collider;
-    protected Outline outline;
     
 
     protected Transform grabTransform;
@@ -22,21 +21,9 @@ public class GrabableObject : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
-        outline = GetComponent<Outline>();
     }
     private void Update()
     {
-        if (!grabTransform)
-        {
-            outline.OutlineColor = Color.clear;
-            return;
-        }
-
-        Vector3 newPosition = Vector3.Lerp(transform.position, grabTransform.position, Time.deltaTime * 100f);
-        rigidbody.MovePosition(newPosition);
-        
-        
-        outline.OutlineColor = canDrop ? Color.white : Color.red;
     }
 
     private void OnTriggerStay(Collider other)

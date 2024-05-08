@@ -14,6 +14,7 @@ public class GameStartButton : Button, IInteractable
         PushButton();
 
         floor.convex = true;
+        floor.gameObject.layer = LayerMask.NameToLayer("Default");
         floor.isTrigger = true;
         startText.SetActive(false);
         introduceText.SetActive(false);

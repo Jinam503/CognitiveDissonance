@@ -12,8 +12,8 @@ public class PlayerLocomotion : MonoBehaviour
     private CharacterController cC;
     [SerializeField] private InputReader input;
     
-    [Header("Boxcast Property")]
-    [SerializeField] private Vector3 boxSize;
+    [Header("SPHERE CAST")]
+    [SerializeField] private float sphereCastRadius;
     [SerializeField] private float maxDistance;
     [SerializeField] private LayerMask groundLayer;
     
@@ -30,9 +30,9 @@ public class PlayerLocomotion : MonoBehaviour
     [Header("GRAVITY")]
     [SerializeField] private float gravityMultiplier;
     
-    private Vector3 velocity;
-    private Vector3 lastFixedPosition;
-    private Vector3 nextFixedPosition;
+    public Vector3 velocity;
+    public Vector3 lastFixedPosition;
+    public Vector3 nextFixedPosition;
     private void Awake()
     {
         cC = GetComponent<CharacterController>();
@@ -41,11 +41,16 @@ public class PlayerLocomotion : MonoBehaviour
     {
         input.MoveEvent += HandleMove;
         input.JumpEvent += HandleJump;
+
+        velocity.y = 0f;
     }
     private void Update()
     {
+        Debug.Log(IsGrounded());
         float interpolationAlpha = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
-        cC.Move(Vector3.Lerp(lastFixedPosition, nextFixedPosition, interpolationAlpha) - transform.position);
+        Vector3 dir = Vector3.Lerp(lastFixedPosition, nextFixedPosition, interpolationAlpha) - transform.position;
+        
+        cC.Move(dir);
     }
     private void FixedUpdate()
     {
@@ -54,10 +59,9 @@ public class PlayerLocomotion : MonoBehaviour
         Vector3 planeVelocity = GetXZVelocity(moveInputX, moveInputY);
         float yVelocity = GetYVelocity();
         velocity = new Vector3(planeVelocity.x, yVelocity, planeVelocity.z);
-
+        
         nextFixedPosition += velocity * Time.fixedDeltaTime;
     }
-
     private void HandleMove(Vector2 moveInputs)
     {
         moveInputX = moveInputs.x;
@@ -84,6 +88,7 @@ public class PlayerLocomotion : MonoBehaviour
 
         if (jumpFlag)
         {
+            Debug.Log("jump");
             jumpFlag = false;
             return velocity.y + jumpForce;
         }
@@ -91,19 +96,11 @@ public class PlayerLocomotion : MonoBehaviour
     }
     private bool IsGrounded()
     {
-        return Physics.BoxCast(transform.position, boxSize, -transform.up, transform.rotation, maxDistance, groundLayer);
-    }
-    
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (hit.rigidbody)
-        {
-            hit.rigidbody.AddForce(velocity / hit.rigidbody.mass);
-        }
+        return Physics.SphereCast(transform.position, sphereCastRadius,-transform.up, out RaycastHit hit, maxDistance, groundLayer);
     }
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
-        Gizmos.DrawCube(transform.position - transform.up * maxDistance, boxSize);
+        Gizmos.DrawSphere(transform.position - transform.up * maxDistance, sphereCastRadius);
     }
 }
