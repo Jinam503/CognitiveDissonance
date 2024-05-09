@@ -13,25 +13,6 @@ public class GravityZone : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if(!isGravityFieldCreated) return;
-
-        if (other.TryGetComponent(out Apple apple))
-        {
-            Rigidbody rb = apple.GetComponent<Rigidbody>();
-            switch (gravityType)
-            {
-                case E_GravityType.OneDirectional:
-                    Vector3 dir = parentTransform.forward;
-                    rb.velocity = (rb.velocity + dir).normalized;
-                    
-                    break;
-                case E_GravityType.Central:
-                    break;
-                case E_GravityType.Repulsive:
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     public void ApplyGravity(E_GravityType gravityType)

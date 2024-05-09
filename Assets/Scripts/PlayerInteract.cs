@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerInteract : MonoBehaviour
 {
-    [SerializeField] private InputReader input;
-    
+    private PlayerInput playerInput;
+    private InputReader input;
     [Header("GRAVITY GUN")]
     [SerializeField] private LayerMask gravityZoneLayer;
 
@@ -17,8 +18,8 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] private LayerMask interactableLayer;
     [SerializeField] private Image cursorIcon;
     [SerializeField] private Sprite[] cursorSprites;
-    private bool isPointingGrabableOrInteractableObject;
-
+    public bool isPointingGrabableOrInteractableObject;
+    
     private Vector3 dir;
     private Ray ray;
     private RaycastHit hitInfo;
@@ -29,38 +30,16 @@ public class PlayerInteract : MonoBehaviour
     private GrabableObject grabbedObject;
     private bool isRotatingX;
     private bool isRotatingY;
-    
     private Camera mainCamera;
     
     private void Awake()
     {
         mainCamera = Camera.main;
     }
+
     private void Start()
     {
-        input.MouseRightEvent += GrabOrDropObject;
-
-        input.StartRotatingGrabObjectByXaxis +=  () => {
-            if (grabbedObject != null) {
-                isRotatingX = true;
-            }
-        };
-        input.StopRotatingGrabObjectByXaxis +=  () => {
-            if (grabbedObject != null) {
-                isRotatingX = false;
-            }
-        };
-        input.StartRotatingGrabObjectByYaxis +=  () => {
-            if (grabbedObject != null) {
-                isRotatingY = true;
-            }
-        };
-        input.StopRotatingGrabObjectByYaxis +=  () => {
-            if (grabbedObject != null) {
-                isRotatingY = false;
-            }
-        };
-        
+        input = GetComponent<InputReader>();
     }
     private void FixedUpdate()
     {
@@ -86,25 +65,8 @@ public class PlayerInteract : MonoBehaviour
         dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         ray = new Ray(mainCamera.transform.position, dir);
         isPointingGrabableOrInteractableObject = Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer);
-    }
-    private void GrabOrDropObject()
-    {
-        if (grabbedObject)
-        {
-            if (!grabbedObject.canDrop)
-            {
-                Debug.Log("여기 못 놓음..");
-                return;
-            }
-            grabbedObject.Drop();
-            grabbedObject = null;
-            
-            return;
-        }
         
-        dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
-        ray = new Ray(mainCamera.transform.position, dir);
-        if (Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer))
+        if (!grabbedObject && input.interact && isPointingGrabableOrInteractableObject)
         {
             if (hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
             {
@@ -117,6 +79,16 @@ public class PlayerInteract : MonoBehaviour
             {
                 interactableObject.Interact();
             }
+        }
+        else if (grabbedObject && !input.interact)
+        {
+            if (!grabbedObject.canDrop)
+            {
+                Debug.Log("여기 못 놓음..");
+                return;
+            }
+            grabbedObject.Drop();
+            grabbedObject = null;
         }
     }
     private void RotateGrabbedObject()
