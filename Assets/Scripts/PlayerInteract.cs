@@ -60,11 +60,23 @@ public class PlayerInteract : MonoBehaviour
 
     #region INTERACT OBJECT
 
+    private Outline pointingOutline;
     private void CheckForInteractableOrGrabableObject()
     {
         dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         ray = new Ray(mainCamera.transform.position, dir);
         isPointingGrabableOrInteractableObject = Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer);
+
+        if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out Outline outline))
+        {
+            pointingOutline = outline;
+            pointingOutline.enabled = true;
+        }
+        else if( pointingOutline)
+        {
+            pointingOutline.enabled = false;
+            pointingOutline = null;
+        }
         
         if (!grabbedObject && input.grab && isPointingGrabableOrInteractableObject
             && hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))

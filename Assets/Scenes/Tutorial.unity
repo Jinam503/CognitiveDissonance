@@ -32514,7 +32514,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1683892437}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 
@@ -37640,7 +37640,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 774697782271980923}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 
@@ -37835,8 +37835,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: {fileID: 11400000, guid: 09c5953d03f10a249a0767cbac61e3c4, type: 2}
-  MoveSpeed: 4
-  RotationSpeed: 3
+  MoveSpeed: 6
+  RotationSpeed: 5
   SpeedChangeRate: 10
   JumpHeight: 1.2
   Gravity: -15
@@ -37879,6 +37879,6 @@ SceneRoots:
   - {fileID: 178109858}
   - {fileID: 108213712}
   - {fileID: 704677308}
-  - {fileID: 1118432758}
-  - {fileID: 704231442}
   - {fileID: 8997996947790604178}
+  - {fileID: 704231442}
+  - {fileID: 1118432758}
