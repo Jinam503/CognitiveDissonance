@@ -6,16 +6,12 @@ using UnityEngine.InputSystem;
 namespace StarterAssets
 {
 	[RequireComponent(typeof(CharacterController))]
-#if ENABLE_INPUT_SYSTEM
-	[RequireComponent(typeof(PlayerInput))]
-#endif
 	public class FirstPersonController : MonoBehaviour
 	{
+		public InputReaders input;
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
-		[Tooltip("Sprint speed of the character in m/s")]
-		public float SprintSpeed = 6.0f;
 		[Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
 		[Tooltip("Acceleration and deceleration")]
@@ -56,6 +52,10 @@ namespace StarterAssets
 
 		// player
 		private float _speed;
+		private Vector2 moveInput;
+		public Vector2 cameraInput;
+		private bool jump;
+		
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
@@ -63,28 +63,9 @@ namespace StarterAssets
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
-
-	
-#if ENABLE_INPUT_SYSTEM
-		private PlayerInput _playerInput;
-#endif
+		
 		private CharacterController _controller;
-		private InputReader _input;
 		private GameObject _mainCamera;
-
-		private const float _threshold = 0.01f;
-
-		private bool IsCurrentDeviceMouse
-		{
-			get
-			{
-				#if ENABLE_INPUT_SYSTEM
-				return _playerInput.currentControlScheme == "KeyboardMouse";
-				#else
-				return false;
-				#endif
-			}
-		}
 
 		private void Awake()
 		{
@@ -97,14 +78,12 @@ namespace StarterAssets
 
 		private void Start()
 		{
+			input.MoveEvent += GetMoveInput;
+			input.CameraRotateEvent += GetCameraInput;
+			input.JumpEvent += GetJumpInput;
+			
 			_controller = GetComponent<CharacterController>();
-			_input = GetComponent<InputReader>();
-#if ENABLE_INPUT_SYSTEM
-			_playerInput = GetComponent<PlayerInput>();
-#else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
-#endif
-
+			
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
@@ -122,6 +101,21 @@ namespace StarterAssets
 			CameraRotation();
 		}
 
+		private void GetMoveInput(Vector2 inputs)
+		{
+			moveInput = inputs;
+		}
+
+		private void GetCameraInput(Vector2 inputs)
+		{
+			cameraInput = inputs;
+		}
+
+		private void GetJumpInput()
+		{
+			jump = true;
+		}
+
 		private void GroundedCheck()
 		{
 			// set sphere position, with offset
@@ -131,42 +125,30 @@ namespace StarterAssets
 
 		private void CameraRotation()
 		{
-			// if there is an input
-			if (_input.look.sqrMagnitude >= _threshold)
-			{
-				//Don't multiply mouse input by Time.deltaTime
-				float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-				
-				_cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
-				_rotationVelocity = _input.look.x * RotationSpeed * deltaTimeMultiplier;
+			_cinemachineTargetPitch -= cameraInput.y * RotationSpeed * Time.deltaTime;
+			_rotationVelocity = cameraInput.x * RotationSpeed * Time.deltaTime;
 
-				// clamp our pitch rotation
-				_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+			// clamp our pitch rotation
+			_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
-				// Update Cinemachine camera target pitch
-				CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+			// Update Cinemachine camera target pitch
+			CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
 
-				// rotate the player left and right
-				transform.Rotate(Vector3.up * _rotationVelocity);
-			}
+			// rotate the player left and right
+			transform.Rotate(Vector3.up * _rotationVelocity);
 		}
 
 		private void Move()
 		{
-			// set target speed based on move speed, sprint speed and if sprint is pressed
-			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			float targetSpeed = MoveSpeed;
 
-			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-			// if there is no input, set the target speed to 0
-			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+			if (moveInput == Vector2.zero) targetSpeed = 0.0f;
 
 			// a reference to the players current horizontal velocity
 			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
 			float speedOffset = 0.1f;
-			float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+			float inputMagnitude = input.analogMovement ? moveInput.magnitude : 1f;
 
 			// accelerate or decelerate to target speed
 			if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
@@ -184,14 +166,14 @@ namespace StarterAssets
 			}
 
 			// normalise input direction
-			Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+			Vector3 inputDirection = new Vector3(moveInput.x, 0.0f, moveInput.y).normalized;
 
 			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 			// if there is a move input rotate player when the player is moving
-			if (_input.move != Vector2.zero)
+			if (moveInput != Vector2.zero)
 			{
 				// move
-				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
+				inputDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
 			}
 
 			// move the player
@@ -212,7 +194,7 @@ namespace StarterAssets
 				}
 
 				// Jump
-				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+				if (jump && _jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -236,7 +218,7 @@ namespace StarterAssets
 				}
 
 				// if we are not grounded, do not jump
-				_input.jump = false;
+				jump = false;
 			}
 
 			// apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)

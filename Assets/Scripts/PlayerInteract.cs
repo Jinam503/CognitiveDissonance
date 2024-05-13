@@ -66,29 +66,23 @@ public class PlayerInteract : MonoBehaviour
         ray = new Ray(mainCamera.transform.position, dir);
         isPointingGrabableOrInteractableObject = Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer);
         
-        if (!grabbedObject && input.interact && isPointingGrabableOrInteractableObject)
+        if (!grabbedObject && input.grab && isPointingGrabableOrInteractableObject
+            && hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
         {
-            if (hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
-            {
-                grabPosition.rotation = grabableObject.transform.rotation;
+            grabPosition.rotation = grabableObject.transform.rotation;
                 
-                grabbedObject = grabableObject;
-                grabbedObject.Grab(grabPosition);
-            }
-            else if (hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
-            {
-                interactableObject.Interact();
-            }
+            grabbedObject = grabableObject;
+            grabbedObject.Grab(grabPosition);
         }
-        else if (grabbedObject && !input.interact)
+        else if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
         {
-            if (!grabbedObject.canDrop)
-            {
-                Debug.Log("여기 못 놓음..");
-                return;
-            }
+            interactableObject.Interact();
+        }
+        else if (grabbedObject )
+        {
             grabbedObject.Drop();
             grabbedObject = null;
+            input.grab = false;
         }
     }
     private void RotateGrabbedObject()

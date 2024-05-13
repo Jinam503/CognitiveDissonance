@@ -15,8 +15,6 @@ public class GrabableObject : MonoBehaviour
 
     protected Transform grabTransform;
 
-    public bool canDrop;
-
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
@@ -24,16 +22,6 @@ public class GrabableObject : MonoBehaviour
     }
     private void Update()
     {
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        canDrop = false;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        canDrop = true;
     }
 
     public void Grab(Transform grabTransformP)
@@ -48,8 +36,6 @@ public class GrabableObject : MonoBehaviour
         
         rigidbody.velocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
-        
-        canDrop = true;
     }
     public void Drop()
     {

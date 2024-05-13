@@ -47,7 +47,6 @@ public class InputReader : MonoBehaviour
 	public void OnGrab(InputValue value)
 	{
 		GrabInput(value.isPressed);
-		Debug.Log("좌클릭");
 	}
 
 	public void OnInteract(InputValue value)
