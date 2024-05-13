@@ -23,13 +23,13 @@ Material:
   m_Name: Black
   m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 2100000, guid: 7d8cc1fd2d1dc174e823803c8ba077e3, type: 2}
-  m_ModifiedSerializedProperties: 0
+  m_ModifiedSerializedProperties: 24
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2005
   stringTagMap:
     RenderType: Opaque
   disabledShaderPasses: []
@@ -39,9 +39,16 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _Blend: 0
+    - _Cull: 2
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
     - _Glossiness: 0.497
     - _Smoothness: 0.497
+    - _SrcBlend: 1
+    - _Surface: 0
+    - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _BaseColor: {r: 0.05882353, g: 0.05882353, b: 0.05882353, a: 1}
+    - _Color: {r: 0.058823504, g: 0.058823504, b: 0.058823504, a: 1}
   m_BuildTextureStacks: []
