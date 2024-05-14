@@ -10,49 +10,45 @@ public class GrabableObject : MonoBehaviour
     public new string name;
 
     private new Rigidbody rigidbody;
-    protected new Collider collider;
-    
+    private new Collider collider;
 
+    public bool isPointing;
+    
     protected Transform grabTransform;
+    protected Outline outline;
 
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
     }
-    private void Update()
+
+    private void Start()
     {
+        outline = GetComponent<Outline>();
     }
 
-    public void Grab(Transform grabTransformP)
+    private void Update()
     {
-        transform.parent = grabTransformP;
-        grabTransform = grabTransformP;
-        
-        ChangeLayerRecursively(gameObject.transform, "HoldLayer");
+        if (grabTransform)
+        {
+            transform.position = Vector3.Lerp(transform.position,grabTransform.position, 20f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, 5f * Time.deltaTime);
+        }
 
-        rigidbody.useGravity = false;
-        collider.isTrigger = true;
-        
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.angularVelocity = Vector3.zero;
+        outline.enabled = isPointing || grabTransform;
+    }
+
+    public void Grab(Transform _grabTransformP)
+    {
+        grabTransform = _grabTransformP;
+
+        rigidbody.isKinematic = true;
     }
     public void Drop()
     {
-        transform.parent = null;
-        ChangeLayerRecursively(gameObject.transform, "Interactable");
+        rigidbody.isKinematic = false;
         
         grabTransform = null;
-        rigidbody.useGravity = true;
-        collider.isTrigger = false;
-    }
-    private void ChangeLayerRecursively(Transform parent, string layerName)
-    {
-        parent.gameObject.layer = LayerMask.NameToLayer(layerName);
-
-        foreach (Transform child in parent)
-        {
-            ChangeLayerRecursively(child, layerName);
-        }
     }
 }

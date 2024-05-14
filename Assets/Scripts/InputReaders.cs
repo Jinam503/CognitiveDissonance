@@ -29,14 +29,8 @@ public class InputReaders : ScriptableObject, GameInput.IGamePlayActions
     public event Action<Vector2> MoveEvent;
     public event Action JumpEvent;
 
-    public event Action MouseLeftDownEvent;
-    public event Action MouseLeftUpEvent;
-    
-    public event Action StartRotatingGrabObjectByXaxis;
-    public event Action StopRotatingGrabObjectByXaxis;
-    public event Action StartRotatingGrabObjectByYaxis;
-    public event Action StopRotatingGrabObjectByYaxis;
-    
+    public event Action DropItemEvent;
+    public event Action GrabItemEvent;
     public event Action<Vector2> CameraRotateEvent;
     
 
@@ -63,10 +57,10 @@ public class InputReaders : ScriptableObject, GameInput.IGamePlayActions
         switch (context.phase)
         {
             case InputActionPhase.Performed:
-                MouseLeftDownEvent?.Invoke();
+                GrabItemEvent?.Invoke();
                 break;
-            case InputActionPhase.Canceled:
-                MouseLeftUpEvent?.Invoke();
+            case InputActionPhase.Canceled: 
+                DropItemEvent?.Invoke();
                 break;
         }
     }

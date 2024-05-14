@@ -8,8 +8,8 @@ using UnityEngine.UI;
 
 public class PlayerInteract : MonoBehaviour
 {
-    private PlayerInput playerInput;
-    private InputReader input;
+    public InputReaders input;
+    
     [Header("GRAVITY GUN")]
     [SerializeField] private LayerMask gravityZoneLayer;
 
@@ -36,10 +36,10 @@ public class PlayerInteract : MonoBehaviour
     {
         mainCamera = Camera.main;
     }
-
     private void Start()
     {
-        input = GetComponent<InputReader>();
+        input.GrabItemEvent += GrabItem;
+        input.DropItemEvent += DropItem;
     }
     private void FixedUpdate()
     {
@@ -50,6 +50,29 @@ public class PlayerInteract : MonoBehaviour
         CheckForInteractableOrGrabableObject();
     }
 
+    #region INTERACT OBJECT
+    private void GrabItem()
+    {
+        if (grabbedObject || !isPointingGrabableOrInteractableObject || !hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject)) return;
+        
+        grabbedObject = grabableObject;
+        grabbedObject.Grab(grabPosition);
+    }
+
+    private void DropItem()
+    {
+        if (!grabbedObject) return;
+        grabbedObject.Drop();
+        grabbedObject = null;
+    }
+
+    private void Interact()
+    {
+        if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
+        {
+            interactableObject.Interact();
+        }
+    }
     private void HoldingGrabObject()
     {
         if (grabbedObject)
@@ -58,43 +81,26 @@ public class PlayerInteract : MonoBehaviour
         }
     }
 
-    #region INTERACT OBJECT
-
-    private Outline pointingOutline;
+    private GrabableObject lastPointingObject;
     private void CheckForInteractableOrGrabableObject()
     {
         dir = Mouse3D.GetMousePosition() - mainCamera.transform.position;
         ray = new Ray(mainCamera.transform.position, dir);
-        isPointingGrabableOrInteractableObject = Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer);
-
-        if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out Outline outline))
+        if (!grabbedObject)
         {
-            pointingOutline = outline;
-            pointingOutline.enabled = true;
-        }
-        else if( pointingOutline)
-        {
-            pointingOutline.enabled = false;
-            pointingOutline = null;
+            isPointingGrabableOrInteractableObject = Physics.Raycast(ray, out hitInfo, interactRange, interactableLayer);
         }
         
-        if (!grabbedObject && input.grab && isPointingGrabableOrInteractableObject
-            && hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
+        if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out GrabableObject pointingObject))
         {
-            grabPosition.rotation = grabableObject.transform.rotation;
-                
-            grabbedObject = grabableObject;
-            grabbedObject.Grab(grabPosition);
+            if (lastPointingObject) lastPointingObject.isPointing = false;
+            lastPointingObject = pointingObject;
+            pointingObject.isPointing = true;
         }
-        else if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
+        else if(lastPointingObject)
         {
-            interactableObject.Interact();
-        }
-        else if (grabbedObject )
-        {
-            grabbedObject.Drop();
-            grabbedObject = null;
-            input.grab = false;
+            lastPointingObject.isPointing = false;
+            lastPointingObject = null;
         }
     }
     private void RotateGrabbedObject()
