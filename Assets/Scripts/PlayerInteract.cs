@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.ProBuilder;
 using UnityEngine.UI;
 
 public class PlayerInteract : MonoBehaviour
@@ -23,6 +25,7 @@ public class PlayerInteract : MonoBehaviour
     private Vector3 dir;
     private Ray ray;
     private RaycastHit hitInfo;
+    private Rigidbody rb;
 
     [Header("GRAB OBJECT")]
     [SerializeField] private Transform grabPosition;
@@ -43,29 +46,47 @@ public class PlayerInteract : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if (!grabbedObject) return;
+
+        Resize();
         HoldingGrabObject();
     }
     private void Update()
     {
         CheckForInteractableOrGrabableObject();
+        
+        
     }
 
     #region INTERACT OBJECT
+
+    public float originalDistance;
+    public float eachScale;
+    public Vector3 targetScale;
+    public Vector3 toPosition;
+    public LayerMask ignoreLayerMask;   
     private void GrabItem()
     {
-        if (grabbedObject || !isPointingGrabableOrInteractableObject || !hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject)) return;
-        
-        grabbedObject = grabableObject;
-        grabbedObject.Grab(grabPosition);
+        if (!grabbedObject && isPointingGrabableOrInteractableObject &&
+            hitInfo.collider.gameObject.TryGetComponent(out GrabableObject grabableObject))
+        {
+            grabbedObject = grabableObject;
+            grabbedObject.Grab(grabPosition);
+            
+            
+            originalDistance = Vector3.Distance(Camera.main.transform.position, grabbedObject.transform.position);
+            
+            eachScale = grabbedObject.transform.localScale.x;
+            targetScale = grabbedObject.transform.localScale;
+        }
     }
 
     private void DropItem()
     {
         if (!grabbedObject) return;
-        grabbedObject.Drop();
-        grabbedObject = null;
+            grabbedObject.Drop();
+            grabbedObject = null;
     }
-
     private void Interact()
     {
         if (isPointingGrabableOrInteractableObject && hitInfo.collider.gameObject.TryGetComponent(out IInteractable interactableObject))
@@ -73,6 +94,32 @@ public class PlayerInteract : MonoBehaviour
             interactableObject.Interact();
         }
     }
+    
+    private void Resize()
+    {
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out RaycastHit hit,
+                Mathf.Infinity, ignoreLayerMask))
+        {
+            Vector3 availablePosition = hit.point;
+            while (Physics.CheckSphere(availablePosition, grabbedObject.transform.localScale.x, ignoreLayerMask))
+            {
+                availablePosition -= Camera.main.transform.forward * Time.deltaTime;
+                float z = Vector3.Distance(mainCamera.transform.position, availablePosition);
+            
+                grabbedObject.transform.localPosition = new Vector3(0, 0, z);
+            
+                targetScale.x = targetScale.y = targetScale.z = z / originalDistance;
+                grabbedObject.transform.localScale = targetScale * eachScale; 
+            }
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        if(grabbedObject) Gizmos.DrawSphere(grabbedObject.transform.position, 1f);
+    }
+
     private void HoldingGrabObject()
     {
         if (grabbedObject)

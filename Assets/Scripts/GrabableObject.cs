@@ -32,22 +32,26 @@ public class GrabableObject : MonoBehaviour
     {
         if (grabTransform)
         {
-            transform.position = Vector3.Lerp(transform.position,grabTransform.position, 20f * Time.deltaTime);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, 5f * Time.deltaTime);
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.identity, 5f * Time.deltaTime);
         }
 
         outline.enabled = isPointing || grabTransform;
     }
 
-    public void Grab(Transform _grabTransformP)
+    public void Grab(Transform getGrabTransform)
     {
-        grabTransform = _grabTransformP;
-
+        grabTransform = getGrabTransform;
+        transform.parent = getGrabTransform;
+        
         rigidbody.isKinematic = true;
+        collider.enabled = false;
     }
     public void Drop()
     {
+        transform.parent = null;
+        
         rigidbody.isKinematic = false;
+        collider.enabled = true;
         
         grabTransform = null;
     }
