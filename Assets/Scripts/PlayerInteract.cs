@@ -54,8 +54,6 @@ public class PlayerInteract : MonoBehaviour
     private void Update()
     {
         CheckForInteractableOrGrabableObject();
-        
-        
     }
 
     #region INTERACT OBJECT
@@ -63,7 +61,6 @@ public class PlayerInteract : MonoBehaviour
     public float originalDistance;
     public float eachScale;
     public Vector3 targetScale;
-    public Vector3 toPosition;
     public LayerMask ignoreLayerMask;   
     private void GrabItem()
     {
@@ -72,7 +69,6 @@ public class PlayerInteract : MonoBehaviour
         {
             grabbedObject = grabableObject;
             grabbedObject.Grab(grabPosition);
-            
             
             originalDistance = Vector3.Distance(Camera.main.transform.position, grabbedObject.transform.position);
             
@@ -106,7 +102,12 @@ public class PlayerInteract : MonoBehaviour
                 availablePosition -= Camera.main.transform.forward * Time.deltaTime;
                 float z = Vector3.Distance(mainCamera.transform.position, availablePosition);
             
-                grabbedObject.transform.localPosition = new Vector3(0, 0, z);
+                Vector3 pos = grabbedObject.transform.localPosition;
+                grabbedObject.transform.localPosition = new Vector3(
+                    Mathf.Lerp(pos.x, 0, Time.deltaTime/7),
+                    Mathf.Lerp(pos.y, 0, Time.deltaTime/7),
+                    z
+                );
             
                 targetScale.x = targetScale.y = targetScale.z = z / originalDistance;
                 grabbedObject.transform.localScale = targetScale * eachScale; 

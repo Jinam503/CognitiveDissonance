@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - CinemachineTarget
+  - Chess
+  - ChessFloor
   layers:
   - Default
   - TransparentFX
@@ -23,7 +25,7 @@ TagManager:
   - 
   - SeeThrough
   - 
-  - 
+  - MovePlayer
   - 
   - 
   - 
