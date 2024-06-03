@@ -110,7 +110,10 @@ public class PlayerInteract : MonoBehaviour
                 );
             
                 targetScale.x = targetScale.y = targetScale.z = z / originalDistance;
-                grabbedObject.transform.localScale = targetScale * eachScale; 
+                grabbedObject.transform.localScale = targetScale * eachScale;
+                float clampScale = Mathf.Clamp(grabbedObject.transform.localScale.x, 0.05f, 1000);
+
+                grabbedObject.transform.localScale = Vector3.one * clampScale;
             }
         }
     }

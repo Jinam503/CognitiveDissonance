@@ -12,7 +12,7 @@ public class ChessFloor : MonoBehaviour
     {
         if (other.transform.TryGetComponent(out GrabableObject grabableObject))
         {
-            if (grabableObject.name == "Chess")
+            if (grabableObject.name == "Chess" && !grabableObject.isGrabbed)
             {
                 gameObject.layer = LayerMask.NameToLayer("Map");
                 Debug.Log("enter");
