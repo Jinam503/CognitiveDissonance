@@ -10,7 +10,7 @@ public class ChessGrabableObject : GrabableObject
     {
         if (other.TryGetComponent(out TeleportFloor t))
         {
-            transform.position += Vector3.up * 8f;
+            transform.position += Vector3.up * 15f;
         }
     }
 }
